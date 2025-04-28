@@ -1,103 +1,411 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { ArrowRight, Bookmark, FolderLock, Layers, Tag } from "lucide-react"
+
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="flex min-h-screen flex-col mx-auto ">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto flex h-14 items-center justify-between max-w-7xl">
+        <div className="flex items-center gap-2 font-semibold">
+          <Bookmark className="h-5 w-5 text-primary" />
+          <span>LinkVault</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <nav className="hidden md:flex gap-6">
+          <Link
+            href="#features"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Funcionalidades
+          </Link>
+          <Link
+            href="#pricing"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Preços
+          </Link>
+          <Link
+            href="#faq"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            FAQ
+          </Link>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link href="/login">
+            <Button variant="ghost" size="sm" >
+              Entrar
+            </Button>
+          </Link>
+          <Link href="/register">
+            <Button size="sm" className="dark:text-white">Registrar</Button>
+          </Link>
+        </div>
+      </div>
+    </header>
+    <main className="flex-1">
+      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <div className="mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                Organize seus links de forma inteligente
+              </h1>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                Guarde, organize e compartilhe seus links favoritos em um só lugar. Com pastas, categorias e proteção
+                por senha.
+              </p>
+            </div>
+            <div className="space-x-4">
+              <Link href="/register">
+                <Button size="lg" className="gap-1 dark:text-white">
+                  Começar agora
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/demo">
+                <Button variant="outline" size="lg">
+                  Ver demonstração
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+        <div className="mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Funcionalidades</h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                Tudo o que você precisa para gerenciar seus links de forma eficiente
+              </p>
+            </div>
+          </div>
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-2">
+            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+              <Bookmark className="h-12 w-12 text-primary" />
+              <h3 className="text-xl font-bold">Guarda de Links</h3>
+              <p className="text-center text-muted-foreground">
+                Adicione, edite e exclua links facilmente. Cada link pode ter título, descrição, tags e URL
+                personalizada.
+              </p>
+            </div>
+            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+              <Layers className="h-12 w-12 text-primary" />
+              <h3 className="text-xl font-bold">Pastas Organizadas</h3>
+              <p className="text-center text-muted-foreground">
+                Organize seus links em pastas customizáveis com suporte para subpastas e hierarquia.
+              </p>
+            </div>
+            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+              <Tag className="h-12 w-12 text-primary" />
+              <h3 className="text-xl font-bold">Categorias e Tags</h3>
+              <p className="text-center text-muted-foreground">
+                Crie categorias personalizadas e use tags para filtrar e encontrar seus links rapidamente.
+              </p>
+            </div>
+            <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+              <FolderLock className="h-12 w-12 text-primary" />
+              <h3 className="text-xl font-bold">Pastas Secretas</h3>
+              <p className="text-center text-muted-foreground">
+                Proteja seus links sensíveis com pastas criptografadas e protegidas por senha.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="w-full py-12 md:py-24 lg:py-32">
+        <div className="mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Planos e Preços</h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                Escolha o plano que melhor atende às suas necessidades
+              </p>
+            </div>
+          </div>
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2">
+            <div className="flex flex-col rounded-lg border shadow-sm">
+              <div className="p-6">
+                <h3 className="text-2xl font-bold">Free</h3>
+                <div className="mt-4 text-3xl font-bold">R$ 0</div>
+                <p className="mt-2 text-muted-foreground">Para uso pessoal básico</p>
+              </div>
+              <div className="flex flex-col p-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Até 50 links
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Até 5 pastas
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Categorias básicas
+                  </li>
+                  <li className="flex items-center text-muted-foreground">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4"
+                    >
+                      <path d="M18 6 6 18"></path>
+                      <path d="m6 6 12 12"></path>
+                    </svg>
+                    Sem pastas secretas
+                  </li>
+                  <li className="flex items-center text-muted-foreground">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4"
+                    >
+                      <path d="M18 6 6 18"></path>
+                      <path d="m6 6 12 12"></path>
+                    </svg>
+                    Sem subpastas
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <Link href="/register">
+                    <Button className="w-full dark:text-white">Começar grátis</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col rounded-lg border shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium">
+                Popular
+              </div>
+              <div className="p-6">
+                <h3 className="text-2xl font-bold">Premium</h3>
+                <div className="mt-4 text-3xl font-bold">
+                  R$ 9,90<span className="text-sm font-normal text-muted-foreground">/mês</span>
+                </div>
+                <p className="mt-2 text-muted-foreground">Para uso profissional e avançado</p>
+              </div>
+              <div className="flex flex-col p-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Links ilimitados
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Pastas ilimitadas
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Categorias avançadas
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Pastas secretas com senha
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 h-4 w-4 text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Suporte para subpastas
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <Link href="/register?plan=premium">
+                    <Button className="w-full dark:text-white" variant="default">
+                      Assinar Premium
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+        <div className="mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Perguntas Frequentes</h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                Respostas para as dúvidas mais comuns
+              </p>
+            </div>
+          </div>
+          <div className="mx-auto max-w-3xl space-y-4 py-12">
+            <div className="rounded-lg border p-4">
+              <h3 className="text-lg font-bold">Como funciona o armazenamento de links?</h3>
+              <p className="mt-2 text-muted-foreground">
+                Seus links são armazenados de forma segura em nossa plataforma. Você pode acessá-los de qualquer
+                dispositivo com acesso à internet.
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <h3 className="text-lg font-bold">Posso compartilhar minhas pastas com outras pessoas?</h3>
+              <p className="mt-2 text-muted-foreground">
+                Sim, você pode compartilhar pastas específicas com outros usuários ou gerar links públicos para
+                compartilhamento.
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <h3 className="text-lg font-bold">Como funcionam as pastas secretas?</h3>
+              <p className="mt-2 text-muted-foreground">
+                As pastas secretas são protegidas por senha. Apenas pessoas com a senha correta podem acessar o
+                conteúdo dessas pastas.
+              </p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <h3 className="text-lg font-bold">Posso mudar de plano depois?</h3>
+              <p className="mt-2 text-muted-foreground">
+                Sim, você pode fazer upgrade ou downgrade do seu plano a qualquer momento. As mudanças entram em vigor
+                imediatamente.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer className="w-full border-t py-6">
+      <div className="mx-auto flex flex-col items-center justify-between gap-4 md:flex-row max-w-7xl">
+        <div className="flex items-center gap-2">
+          <Bookmark className="h-5 w-5 text-primary" />
+          <span className="font-semibold">LinkVault</span>
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          &copy; {new Date().getFullYear()} LinkVault. Todos os direitos reservados.
+        </p>
+        <div className="flex gap-4">
+          <Link href="/terms" className="text-sm text-muted-foreground underline underline-offset-4">
+            Termos
+          </Link>
+          <Link href="/privacy" className="text-sm text-muted-foreground underline underline-offset-4">
+            Privacidade
+          </Link>
+        </div>
+      </div>
+    </footer>
+  </div>
   );
 }
