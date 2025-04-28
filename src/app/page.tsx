@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowRight, Bookmark, FolderLock, Layers, Tag } from "lucide-react"
+import { ArrowRight, Bookmark, FolderLock, Layers, Link2, Tag } from "lucide-react"
 
 
 export default function Home() {
@@ -9,8 +9,8 @@ export default function Home() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 items-center justify-between max-w-7xl">
         <div className="flex items-center gap-2 font-semibold">
-          <Bookmark className="h-5 w-5 text-primary" />
-          <span>LinkVault</span>
+          <Link2 className="h-5 w-5 text-primary" />
+          <span>UseLink</span>
         </div>
         <nav className="hidden md:flex gap-6">
           <Link
@@ -390,7 +390,7 @@ export default function Home() {
     <footer className="w-full border-t py-6">
       <div className="mx-auto flex flex-col items-center justify-between gap-4 md:flex-row max-w-7xl">
         <div className="flex items-center gap-2">
-          <Bookmark className="h-5 w-5 text-primary" />
+          <Link2 className="h-5 w-5 text-primary" />
           <span className="font-semibold">LinkVault</span>
         </div>
         <p className="text-center text-sm text-muted-foreground">
