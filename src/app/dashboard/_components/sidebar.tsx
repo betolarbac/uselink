@@ -2,10 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import {
-  Bookmark,
   Folder,
   FolderLock,
   Home,
+  Link2,
   Plus,
   Settings,
   Tag,
@@ -51,8 +51,8 @@ export function Sidebar() {
           href="/dashboard"
           className="flex items-center gap-2 font-semibold md:ml-2"
         >
-          <Bookmark className="h-5 w-5 text-primary" />
-          <span className="hidden md:inline-flex">LinkVault</span>
+          <Link2 className="h-5 w-5 text-primary" />
+          <span className="hidden md:inline-flex">UseLink</span>
         </Link>
       </div>
       <div className="flex-1 pt-3">
