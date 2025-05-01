@@ -5,8 +5,6 @@ import { getFolders } from "./actions/folderActions";
 
 export default async function FoldersPage() {
   const folders = await getFolders();
-
-  console.log(folders);
   return (
     <div className="flex-1">
       <div>
