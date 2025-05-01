@@ -35,6 +35,21 @@ export async function getLinks() {
   });
 }
 
+export async function getLinksByFolderId(folderId: string) {
+  const user = await getCurrentUser();
+
+  return await prisma.link.findMany({
+    where: {
+      userId: user?.id,
+      folderId,
+    },
+    include: {
+      folder: true,
+      category: true,
+    },
+  });
+}
+
 export async function deleteLink(id: string) {
   const user = await getCurrentUser();
 
