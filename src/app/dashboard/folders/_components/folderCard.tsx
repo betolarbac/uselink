@@ -31,7 +31,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
   };
 
   return (
-    <div className="group bg-card border border-border p-4 rounded-lg hover:shadow-md transition-all hover:border-primary/20">
+    <div className="group bg-card border border-border p-4 rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
       <div className="flex items-start justify-between">
         <div className="flex gap-3 items-center">
           <div className={`p-2.5 rounded-md`}>

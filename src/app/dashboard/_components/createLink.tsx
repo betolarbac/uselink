@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLinkSchema, CreateLinkType } from "@/lib/validators/link";
 import { createLink } from "../actions/linksActions";
+import { getFolders } from "../folders/actions/folderActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,10 +27,39 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type Folder = {
+  id: string;
+  name: string;
+  isSecret: boolean;
+};
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [folders, setFolders] = useState<Folder[]>([]);
+
+  useEffect(() => {
+    async function loadFolders() {
+      try {
+        const folderData = await getFolders();
+        setFolders(folderData);
+      } catch (error) {
+        console.error("Erro ao carregar pastas:", error);
+      }
+    }
+
+    if (open) {
+      loadFolders();
+    }
+  }, [open]);
 
   const form = useForm<CreateLinkType>({
     resolver: zodResolver(createLinkSchema),
@@ -119,7 +149,36 @@ export function CreateLink() {
                 </FormItem>
               )}
             />
-            {/* Aqui você pode adicionar campos para selecionar pasta e categoria */}
+            
+            <FormField
+              control={form.control}
+              name="folderId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pasta</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma pasta" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Sem pasta</SelectItem>
+                      {folders.map((folder) => (
+                        <SelectItem key={folder.id} value={folder.id}>
+                          {folder.name} {folder.isSecret ? "🔒" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <DialogFooter>
               <Button
                 type="submit"
