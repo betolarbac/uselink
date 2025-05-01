@@ -3,8 +3,12 @@ import { LinkTable } from "./_components/links/link-table";
 import { CreateLink } from "./_components/createLink";
 import LinksData from "./_components/links/linksData";
 import { CreditCard, Link2 } from "lucide-react";
+import { getLinks } from "./actions/linksActions";
 
 export default async function DashboardPage() {
+  const dataLinkTable = await getLinks();
+
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -36,7 +40,7 @@ export default async function DashboardPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="links" className="space-y-4">
-          <LinkTable />
+          <LinkTable links={dataLinkTable} />
         </TabsContent>
         <TabsContent value="overview" className="space-y-4">
           <LinksData />

@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react";
-import { getLinks, deleteLink } from "../../actions/linksActions";
+import { deleteLink } from "../../actions/linksActions";
 
 type Link = {
   id: string;
@@ -40,7 +40,11 @@ type Link = {
   category?: { id: string; name: string } | null;
 };
 
-export function LinkTable() {
+interface LinkTableProps {
+  links: Link[];
+}
+
+export function LinkTable({ links: dataLinks }: LinkTableProps) {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,8 +58,7 @@ export function LinkTable() {
     async function fetchLinks() {
       try {
         setLoading(true);
-        const data = await getLinks();
-        setLinks(data);
+        setLinks(dataLinks);
       } catch (error) {
         console.error("Erro ao buscar links:", error);
       } finally {
@@ -64,7 +67,7 @@ export function LinkTable() {
     }
 
     fetchLinks();
-  }, []);
+  }, [dataLinks]);
 
   const visibleLinks = links.filter((link) => !link.folder?.isSecret);
 
