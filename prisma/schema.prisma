@@ -14,10 +14,69 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(cuid())
-  firebaseId String @unique
-  email     String  @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String     @id @default(cuid())
+  firebaseId String     @unique
+  email      String     @unique
+  name       String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  plan       Plan       @default(FREE)
+
+  links      Link[]
+  folders    Folder[]
+  categories Category[]
+}
+
+model Link {
+  id          String    @id @default(cuid())
+  title       String
+  url         String
+  description String?
+  customSlug  String?   @unique
+  isSecret    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+
+  folder      Folder?   @relation(fields: [folderId], references: [id])
+  folderId    String?
+
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+}
+
+model Folder {
+  id         String     @id @default(cuid())
+  name       String
+  isSecret   Boolean    @default(false)
+  password   String?    // hash da senha se for pasta secreta
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+
+  parent     Folder?    @relation("Subfolders", fields: [parentId], references: [id])
+  parentId   String?
+  subfolders Folder[]   @relation("Subfolders")
+
+  links      Link[]
+}
+
+model Category {
+  id         String     @id @default(cuid())
+  name       String
+  createdAt  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+
+  links      Link[]
+}
+
+enum Plan {
+  FREE
+  PREMIUM
 }
