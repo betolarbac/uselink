@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Edit, Trash, FolderLock, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
 import { deleteFolder } from "../actions/folderActions";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FolderCardProps {
   id: string;
@@ -31,6 +32,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
   };
 
   return (
+    <Link href={`/dashboard/folders/${dataFolder.id}`}>
     <div className="group bg-card border border-border p-4 rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
       <div className="flex items-start justify-between">
         <div className="flex gap-3 items-center">
@@ -58,7 +60,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
             <p className="text-sm text-muted-foreground">
               {typeof dataFolder.subfoldersCount === "number"
                 ? `${dataFolder.subfoldersCount} ${
-                  dataFolder.subfoldersCount === 1 ? "subpasta" : "subpastas"
+                    dataFolder.subfoldersCount === 1 ? "subpasta" : "subpastas"
                   }`
                 : dataFolder.subfoldersCount}
             </p>
@@ -90,17 +92,19 @@ export default function FolderCard(dataFolder: FolderCardProps) {
               <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                 <Edit className="h-4 w-4" /> Editar
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
                 onClick={handleDeleteFolder}
                 disabled={isPending}
               >
-                <Trash className="h-4 w-4" /> {isPending ? "Excluindo..." : "Excluir"}
+                <Trash className="h-4 w-4" />{" "}
+                {isPending ? "Excluindo..." : "Excluir"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
     </div>
+    </Link>
   );
 }
