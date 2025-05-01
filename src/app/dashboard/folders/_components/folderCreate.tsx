@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { FolderPlus } from "lucide-react";
+import { FolderPlus, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFolderSchema, CreateFolderType } from "@/lib/validators/folders";
@@ -26,9 +26,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { createFolder } from "../actions/folderActions";
+import { useRouter } from "next/navigation";
 
 export default function FolderCreate() {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<CreateFolderType>({
     resolver: zodResolver(createFolderSchema),
@@ -42,9 +45,16 @@ export default function FolderCreate() {
 // TODO:  falta ajustar senhas nas pastas cadastradas
   async function onSubmit(data: CreateFolderType) {
     try {
+      setIsSubmitting(true);
       await createFolder(data.name, data.isSecret);
+
+      form.reset();
+      setOpen(false);
+      router.refresh();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -124,8 +134,8 @@ export default function FolderCreate() {
               )}
             </div>
             <DialogFooter>
-              <Button type="submit" className="dark:text-white">
-                Criar Pasta
+              <Button type="submit" className="dark:text-white" disabled={isSubmitting}>
+                {isSubmitting ? (<><Loader className="h-5 w-5 animate-spin"/> <span>Criando...</span></>) : "Criar Pasta"}
               </Button>
             </DialogFooter>
           </form>
