@@ -1,11 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -13,173 +25,80 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react"
+} from "@/components/ui/dialog";
+import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { getLinks, deleteLink } from "../../actions/linksActions";
 
-// Dados estáticos para demonstração
-const staticLinks = [
-  {
-    id: "1",
-    title: "Google",
-    url: "https://www.google.com",
-    description: "Motor de busca mais popular do mundo",
-    categoryId: "1",
-    folderId: "1"
-  },
-  {
-    id: "2",
-    title: "GitHub",
-    url: "https://github.com",
-    description: "Plataforma de hospedagem de código",
-    categoryId: "2",
-    folderId: null
-  },
-  {
-    id: "3",
-    title: "Stack Overflow",
-    url: "https://stackoverflow.com",
-    description: "Site de perguntas e respostas para programadores",
-    categoryId: "2",
-    folderId: "2"
-  },
-  {
-    id: "4",
-    title: "MDN Web Docs",
-    url: "https://developer.mozilla.org",
-    description: "Recursos para desenvolvedores web",
-    categoryId: "2",
-    folderId: null
-  },
-  {
-    id: "5",
-    title: "YouTube",
-    url: "https://www.youtube.com",
-    description: "Plataforma de compartilhamento de vídeos",
-    categoryId: "3",
-    folderId: "1"
-  },
-  {
-    id: "6",
-    title: "Netflix",
-    url: "https://www.netflix.com",
-    description: "Serviço de streaming de vídeo",
-    categoryId: "3",
-    folderId: null
-  },
-  {
-    id: "7",
-    title: "Amazon",
-    url: "https://www.amazon.com",
-    description: "Loja online",
-    categoryId: "4",
-    folderId: "3"
-  },
-  {
-    id: "8",
-    title: "Twitter",
-    url: "https://twitter.com",
-    description: "Rede social",
-    categoryId: "5",
-    folderId: null
-  },
-  {
-    id: "9",
-    title: "LinkedIn",
-    url: "https://www.linkedin.com",
-    description: "Rede social profissional",
-    categoryId: "5",
-    folderId: "2"
-  },
-  {
-    id: "10",
-    title: "Facebook",
-    url: "https://www.facebook.com",
-    description: "Rede social",
-    categoryId: "5",
-    folderId: null
-  },
-  {
-    id: "11",
-    title: "Instagram",
-    url: "https://www.instagram.com",
-    description: "Rede social de compartilhamento de fotos",
-    categoryId: "5",
-    folderId: "1"
-  },
-  {
-    id: "12",
-    title: "Reddit",
-    url: "https://www.reddit.com",
-    description: "Agregador de conteúdo social",
-    categoryId: "5",
-    folderId: null
-  }
-];
-
-const staticCategories = [
-  { id: "1", name: "Busca" },
-  { id: "2", name: "Desenvolvimento" },
-  { id: "3", name: "Entretenimento" },
-  { id: "4", name: "Compras" },
-  { id: "5", name: "Redes Sociais" }
-];
-
-const staticFolders = [
-  { id: "1", name: "Favoritos", isSecret: false },
-  { id: "2", name: "Trabalho", isSecret: false },
-  { id: "3", name: "Pessoal", isSecret: false }
-];
+type Link = {
+  id: string;
+  title: string;
+  url: string;
+  description?: string | null;
+  categoryId?: string | null;
+  folderId?: string | null;
+  folder?: { id: string; name: string; isSecret: boolean } | null;
+  category?: { id: string; name: string } | null;
+};
 
 export function LinkTable() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  // Remove the unused state variable
-  // const [linkToDelete, setLinkToDelete] = useState<string | null>(null)
+  const [links, setLinks] = useState<Link[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
 
-  const linksPerPage = 10
+  const linksPerPage = 10;
 
-  // Usando dados estáticos em vez de useLinkVault
-  const visibleLinks = staticLinks.filter(link => {
-    const folder = staticFolders.find(f => f.id === link.folderId);
-    return !folder?.isSecret;
-  });
+  useEffect(() => {
+    async function fetchLinks() {
+      try {
+        setLoading(true);
+        const data = await getLinks();
+        setLinks(data);
+      } catch (error) {
+        console.error("Erro ao buscar links:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLinks();
+  }, []);
+
+  const visibleLinks = links.filter((link) => !link.folder?.isSecret);
 
   const filteredLinks = visibleLinks.filter(
     (link) =>
       link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       link.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      link.description?.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      link.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const totalPages = Math.ceil(filteredLinks.length / linksPerPage)
-  const startIndex = (currentPage - 1) * linksPerPage
-  const paginatedLinks = filteredLinks.slice(startIndex, startIndex + linksPerPage)
-
-  const getCategoryName = (categoryId: string | null) => {
-    if (!categoryId) return null
-    const category = staticCategories.find((c) => c.id === categoryId)
-    return category ? category.name : null
-  }
-
-  const getFolderName = (folderId: string | null) => {
-    if (!folderId) return null
-    const folder = staticFolders.find((f) => f.id === folderId)
-    return folder ? folder.name : null
-  }
+  const totalPages = Math.ceil(filteredLinks.length / linksPerPage);
+  const startIndex = (currentPage - 1) * linksPerPage;
+  const paginatedLinks = filteredLinks.slice(
+    startIndex,
+    startIndex + linksPerPage
+  );
 
   const handleDeleteClick = (id: string) => {
-    // No need to set linkToDelete since we're not using it
-    // setLinkToDelete(id)
-    console.log("Excluindo link:", id)
-    setDeleteDialogOpen(true)
-  }
+    setLinkToDelete(id);
+    setDeleteDialogOpen(true);
+  };
 
-  const confirmDelete = () => {
-    // Apenas fecha o diálogo, sem realmente excluir (dados estáticos)
-    // setLinkToDelete(null) - Remove this line
-    setDeleteDialogOpen(false)
-  }
+  const confirmDelete = async () => {
+    if (linkToDelete) {
+      try {
+        await deleteLink(linkToDelete);
+        setLinks(links.filter((link) => link.id !== linkToDelete));
+      } catch (error) {
+        console.error("Erro ao excluir link:", error);
+      }
+    }
+    setLinkToDelete(null);
+    setDeleteDialogOpen(false);
+  };
 
   return (
     <div className="space-y-4">
@@ -204,7 +123,13 @@ export function LinkTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedLinks.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  Carregando links...
+                </TableCell>
+              </TableRow>
+            ) : paginatedLinks.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   Nenhum link encontrado.
@@ -226,14 +151,14 @@ export function LinkTable() {
                     </a>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {link.categoryId && (
+                    {link.category && (
                       <Badge variant="outline" className="bg-muted">
-                        {getCategoryName(link.categoryId)}
+                        {link.category.name}
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {link.folderId && getFolderName(link.folderId)}
+                    {link.folder && link.folder.name}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -295,7 +220,9 @@ export function LinkTable() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             Próxima
@@ -308,11 +235,15 @@ export function LinkTable() {
           <DialogHeader>
             <DialogTitle>Confirmar exclusão</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja excluir este link? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir este link? Esta ação não pode ser
+              desfeita.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancelar
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
@@ -322,5 +253,5 @@ export function LinkTable() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
