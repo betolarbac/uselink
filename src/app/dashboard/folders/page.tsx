@@ -37,6 +37,7 @@ export default async function FoldersPage() {
               name={folder.name}
               subfoldersCount=""
               isSecret={folder.isSecret}
+              linksCount={folder.links.length}
             />
           ))}
         </div>

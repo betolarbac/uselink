@@ -9,6 +9,17 @@ export async function getFolders() {
     where: {
       userId: user?.id,
     },
+    select: {
+      id: true,
+      name: true,
+      isSecret: true,
+      links: {
+        select: {
+          id: true,
+          title: true,
+        }
+      }
+    }
   });
 }
 

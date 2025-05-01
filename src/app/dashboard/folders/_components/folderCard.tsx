@@ -17,6 +17,7 @@ interface FolderCardProps {
   name: string;
   subfoldersCount: number | string;
   isSecret?: boolean;
+  linksCount: number | string;
 }
 
 export default function FolderCard(dataFolder: FolderCardProps) {
@@ -58,13 +59,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                {typeof dataFolder.subfoldersCount === "number"
-                  ? `${dataFolder.subfoldersCount} ${
-                      dataFolder.subfoldersCount === 1
-                        ? "subpasta"
-                        : "subpastas"
-                    }`
-                  : dataFolder.subfoldersCount}
+                {dataFolder.linksCount} links cadastrados
               </p>
             </div>
           </div>
