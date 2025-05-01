@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { CreateLink } from "./createLink";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -112,10 +112,7 @@ export function Sidebar() {
         </div>
       </div>
       <div className="mt-auto border-t p-3">
-        <Button className="w-full justify-start gap-2">
-          <Plus className="h-4 w-4" />
-          <span className="hidden md:inline-flex">Novo Link</span>
-        </Button>
+        <CreateLink />
       </div>
     </div>
   );
