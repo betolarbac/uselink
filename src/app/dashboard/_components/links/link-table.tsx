@@ -30,6 +30,7 @@ import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
+import Image from "next/image";
 
 interface LinkTableProps {
   links: Link[];
@@ -153,6 +154,17 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-primary hover:underline"
                     >
+                      <Image
+                        src={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=32`}
+                        alt="Favicon"
+                        className="h-4 w-4"
+                        width={16}
+                        height={16}
+                        onError={(e) => {
+                          // Fallback para quando o favicon não for encontrado
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
                       {link.url}
                       <ExternalLink className="h-3 w-3" />
                     </a>
