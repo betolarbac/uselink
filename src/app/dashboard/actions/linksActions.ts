@@ -50,6 +50,26 @@ export async function getLinksByFolderId(folderId: string) {
   });
 }
 
+export async function updateLink(id: string, input: unknown) {
+  const data = createLinkSchema.parse(input);
+  const user = await getCurrentUser();
+
+  const cleanData = {
+    ...data,
+    folderId: data.folderId?.trim() || undefined,
+    categoryId: data.categoryId?.trim() || undefined,
+    customSlug: data.customSlug?.trim() || undefined,
+  }
+
+  return await prisma.link.updateMany({
+    where: {
+      id,
+      userId: user?.id,
+    },
+    data: cleanData,
+  })
+}
+
 export async function deleteLink(id: string) {
   const user = await getCurrentUser();
 
