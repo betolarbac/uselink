@@ -35,11 +35,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Folder } from "@/types/typesLinks";
+import { useRouter } from "next/navigation";
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadFolders() {
@@ -76,7 +78,7 @@ export function CreateLink() {
 
       form.reset();
       setOpen(false);
-      // adicionar uma notificação de sucesso ou recarregar os links
+      router.refresh();
     } catch (error) {
       console.error("Erro ao criar link:", error);
     } finally {
