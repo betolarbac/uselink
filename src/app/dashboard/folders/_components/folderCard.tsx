@@ -33,9 +33,9 @@ export default function FolderCard(dataFolder: FolderCardProps) {
   };
 
   return (
-    <Link href={`/dashboard/folders/${dataFolder.id}`}>
-      <div className="group bg-card border border-border p-4 rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
+    <div className="group bg-card border border-border rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
         <div className="flex items-start justify-between">
+    <Link href={`/dashboard/folders/${dataFolder.id}`} className="flex-1 p-4">
           <div className="flex gap-3 items-center">
             <div className={`p-2.5 rounded-md`}>
               <div className="relative">
@@ -63,8 +63,8 @@ export default function FolderCard(dataFolder: FolderCardProps) {
               </p>
             </div>
           </div>
-
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+          </Link>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -102,6 +102,6 @@ export default function FolderCard(dataFolder: FolderCardProps) {
           </div>
         </div>
       </div>
-    </Link>
+
   );
 }
