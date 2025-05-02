@@ -28,17 +28,8 @@ import {
 } from "@/components/ui/dialog";
 import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
-
-type Link = {
-  id: string;
-  title: string;
-  url: string;
-  description?: string | null;
-  categoryId?: string | null;
-  folderId?: string | null;
-  folder?: { id: string; name: string; isSecret: boolean } | null;
-  category?: { id: string; name: string } | null;
-};
+import { LinkEdit } from "./linkEdit";
+import { Link } from "@/types/typesLinks";
 
 interface LinkTableProps {
   links: Link[];
@@ -51,6 +42,8 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [linkToEdit, setLinkToEdit] = useState<Link | null>(null);
 
   const linksPerPage = 10;
 
@@ -101,6 +94,17 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
     }
     setLinkToDelete(null);
     setDeleteDialogOpen(false);
+  };
+
+  const handleEditClick = (link: Link) => {
+    setLinkToEdit(link);
+    setEditDialogOpen(true);
+  };
+
+  const handleLinkUpdated = (updatedLink: Link) => {
+    setLinks(
+      links.map((link) => (link.id === updatedLink.id ? updatedLink : link))
+    );
   };
 
   return (
@@ -186,6 +190,7 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                         <DropdownMenuItem
                           onSelect={(e) => e.preventDefault()}
                           className="flex cursor-pointer items-center"
+                          onClick={() => handleEditClick(link)}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
                           Editar
@@ -231,6 +236,15 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
             Próxima
           </Button>
         </div>
+      )}
+
+      {linkToEdit && (
+        <LinkEdit
+          link={linkToEdit}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onLinkUpdated={handleLinkUpdated}
+        />
       )}
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
