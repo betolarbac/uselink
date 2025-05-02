@@ -34,12 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type Folder = {
-  id: string;
-  name: string;
-  isSecret: boolean;
-};
+import { Folder } from "@/types/typesLinks";
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
