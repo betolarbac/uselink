@@ -13,12 +13,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,11 +20,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExternalLink, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Edit, ExternalLink, Eye, Trash2 } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
 import Image from "next/image";
+import { LinkDetailsModal } from "./LinkDetailsModal";
 
 interface LinkTableProps {
   links: Link[];
@@ -45,6 +40,8 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [linkToEdit, setLinkToEdit] = useState<Link | null>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedLink, setSelectedLink] = useState<Link | null>(null);
 
   const linksPerPage = 10;
 
@@ -108,6 +105,11 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
     );
   };
 
+  const handleViewDetails = (link: Link) => {
+    setSelectedLink(link);
+    setDetailsDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -155,14 +157,16 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       className="flex items-center gap-1 text-primary hover:underline"
                     >
                       <Image
-                        src={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=32`}
+                        src={`https://www.google.com/s2/favicons?domain=${
+                          new URL(link.url).hostname
+                        }&sz=32`}
                         alt="Favicon"
                         className="h-4 w-4"
                         width={16}
                         height={16}
                         onError={(e) => {
                           // Fallback para quando o favicon não for encontrado
-                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
                       {link.url}
@@ -180,42 +184,34 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                     {link.folder && link.folder.name}
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Abrir menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex cursor-pointer items-center"
-                          >
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            Abrir Link
-                          </a>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={(e) => e.preventDefault()}
-                          className="flex cursor-pointer items-center"
-                          onClick={() => handleEditClick(link)}
-                        >
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="flex cursor-pointer items-center text-destructive focus:text-destructive"
-                          onSelect={() => handleDeleteClick(link.id)}
-                        >
-                          <Trash className="mr-2 h-4 w-4" />
-                          Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleViewDetails(link)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEditClick(link)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteClick(link.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -248,6 +244,14 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
             Próxima
           </Button>
         </div>
+      )}
+
+      {selectedLink && (
+        <LinkDetailsModal
+          isOpen={detailsDialogOpen}
+          onClose={() => setDetailsDialogOpen(false)}
+          links={selectedLink}
+        />
       )}
 
       {linkToEdit && (
