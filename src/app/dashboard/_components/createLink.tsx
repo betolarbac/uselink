@@ -36,11 +36,18 @@ import {
 } from "@/components/ui/select";
 import { Folder } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
+import { getCategories } from "../categories/actions/categoriesActions";
+
+type CategoriesType = {
+  name: string;
+  id: string;
+};
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [categories, setCategories] = useState<CategoriesType[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -55,6 +62,21 @@ export function CreateLink() {
 
     if (open) {
       loadFolders();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const categoriesData = await getCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    }
+
+    if (open) {
+      loadCategories();
     }
   }, [open]);
 
@@ -146,36 +168,67 @@ export function CreateLink() {
                 </FormItem>
               )}
             />
-            
-            <FormField
-              control={form.control}
-              name="folderId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pasta</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma pasta" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">Sem pasta</SelectItem>
-                      {folders.map((folder) => (
-                        <SelectItem key={folder.id} value={folder.id}>
-                          {folder.name} {folder.isSecret ? "🔒" : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
+
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="folderId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Pasta</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma pasta" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Sem pasta</SelectItem>
+                        {folders.map((folder) => (
+                          <SelectItem key={folder.id} value={folder.id}>
+                            {folder.name} {folder.isSecret ? "🔒" : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Categoria</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma Categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Sem pasta</SelectItem>
+                        {categories.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.id}>
+                            {categoria.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <DialogFooter>
               <Button
                 type="submit"
