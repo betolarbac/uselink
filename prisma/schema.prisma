@@ -68,6 +68,7 @@ model Folder {
 model Category {
   id         String     @id @default(cuid())
   name       String
+  color      String     @default("#3b82f6")
   createdAt  DateTime   @default(now())
 
   user       User       @relation(fields: [userId], references: [id])
