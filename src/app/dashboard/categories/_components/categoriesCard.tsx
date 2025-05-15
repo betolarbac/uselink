@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 interface CategoriasCardProps {
   id: string;
   name: string;
+  color: string;
   linksCount: number | string;
 }
 
@@ -31,11 +32,10 @@ export default function CategoriesCard(dataCategory: CategoriasCardProps) {
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+    <Card className="max-w-80" style={{ borderColor: dataCategory.color }}>
+      <CardHeader className="pb-2 px-0">
+        <div className="flex items-center justify-between px-6">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded-full" />
             <CardTitle className="text-base">{dataCategory.name}</CardTitle>
           </div>
           <Button
@@ -48,6 +48,10 @@ export default function CategoriesCard(dataCategory: CategoriasCardProps) {
             <Trash2 />
           </Button>
         </div>
+        <div
+          className="h-1 w-full"
+          style={{ backgroundColor: dataCategory.color }}
+        />
       </CardHeader>
       <CardContent>
         <CardDescription>

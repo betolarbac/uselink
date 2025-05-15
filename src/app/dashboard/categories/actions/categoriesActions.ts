@@ -13,6 +13,7 @@ export async function getCategories() {
     select: {
       id: true,
       name: true,
+      color: true,
       links: {
         select: {
           id: true,

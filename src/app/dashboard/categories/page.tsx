@@ -33,12 +33,13 @@ export default async function CategoriesPage() {
           <CreateCategories />
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {categories.map((categories) => (
             <CategoriesCard
               id={categories.id}
               key={categories.id}
               name={categories.name}
+              color={categories.color}
               linksCount={categories.links.length}
             />
           ))}
