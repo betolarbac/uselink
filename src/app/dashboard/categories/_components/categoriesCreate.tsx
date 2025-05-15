@@ -30,19 +30,21 @@ import { useRouter } from "next/navigation";
 export default function CreateCategories() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [color, setColor] = useState("#3b82f6");
   const router = useRouter();
 
   const form = useForm<CategoriesType>({
     resolver: zodResolver(categoriesSchema),
     defaultValues: {
       name: "",
+      color: "#3b82f6",
     },
   });
 
   async function onSubmit(data: CategoriesType) {
     try {
       setIsSubmitting(true);
-      await createCategory(data.name);
+      await createCategory(data);
 
       form.reset();
       setOpen(false);
@@ -84,6 +86,43 @@ export default function CreateCategories() {
                           placeholder="Trabalho, Lazer, Estudo..."
                           {...field}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cor</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input
+                            type="color"
+                            value={field.value}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              setColor(e.target.value);
+                            }}
+                            className="h-10 w-10 cursor-pointer p-1"
+                          />
+
+                          <Input
+                            type="text"
+                            value={color}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              setColor(e.target.value);
+                            }}
+                            placeholder="#3b82f6"
+                            className="flex-1"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

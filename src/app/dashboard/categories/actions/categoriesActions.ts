@@ -1,6 +1,7 @@
 "use server"
 import { getCurrentUser } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma";
+import { CategoriesType } from "@/lib/validators/categories";
 
 export async function getCategories() {
   const user = await getCurrentUser();
@@ -22,12 +23,13 @@ export async function getCategories() {
   });
 }
 
-export async function createCategory(name: string) {
+export async function createCategory(data: CategoriesType) {
   const user = await getCurrentUser();
 
   return await prisma?.category.create({
     data: {
-      name: name,
+      name: data.name,
+      color: data.color,
       userId: user?.id || "",
     },
   })
