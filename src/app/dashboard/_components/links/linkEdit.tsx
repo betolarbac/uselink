@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Folder, Link } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
+import { getCategories } from "../../categories/actions/categoriesActions";
 
 interface LinkEditProps {
   link: Link;
@@ -43,9 +44,15 @@ interface LinkEditProps {
   onLinkUpdated: (updatedLink: Link) => void;
 }
 
+type CategoriesType = {
+  name: string;
+  id: string;
+};
+
 export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [categories, setCategories] = useState<CategoriesType[]>([])
 
   const router = useRouter();
 
@@ -84,8 +91,19 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
       }
     }
 
+  async function loadCategories() {
+    try {
+      const categoriesData = await getCategories();
+
+      setCategories(categoriesData);
+    } catch (error) {
+      console.error("Erro ao carregar categorias:", error);
+    }
+  }
+
     if (open) {
       loadFolders();
+      loadCategories();
     }
   }, [open]);
 
@@ -164,19 +182,20 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                 </FormItem>
               )}
             />
-            
+
+            <div className="flex gap-4">
             <FormField
               control={form.control}
               name="folderId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex-1">
                   <FormLabel>Pasta</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     value={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione uma pasta" />
                       </SelectTrigger>
@@ -194,6 +213,37 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                 </FormItem>
               )}
             />
+            
+            <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Categoria</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma Categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Sem pasta</SelectItem>
+                        {categories.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.id}>
+                            {categoria.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+            </div>
             
             <DialogFooter>
               <Button
