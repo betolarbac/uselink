@@ -45,3 +45,17 @@ export async function deleteFolder(id: string) {
     },
   });
 }
+
+export async function getFolderName(id: string) {
+  const User = await getCurrentUser();
+
+  return await prisma.folder.findFirst({
+    where: {
+      id,
+      userId: User?.id,
+    },
+    select: {
+      name: true,
+    }
+  });
+}

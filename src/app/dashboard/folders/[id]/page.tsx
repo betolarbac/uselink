@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getFolderName } from "../actions/folderActions";
 
 type LinkData = Awaited<ReturnType<typeof getLinksByFolderId>>;
 
@@ -23,6 +24,7 @@ export default function FolderIdPage() {
   const router = useRouter();
   const params = useParams();
   const [dataLink, setDataLink] = useState<LinkData | undefined>(undefined);
+  const [folderName, setFolderName] = useState<string>("");
 
   useEffect(() => {
     async function getLinks() {
@@ -30,8 +32,17 @@ export default function FolderIdPage() {
       setDataLink(links);
     }
 
+    async function getFolderIdName() {
+      const folderIdName = await getFolderName(params.id as string);
+
+      setFolderName(folderIdName?.name ?? "");
+    }
+
+    getFolderIdName();
     getLinks();
   }, [params.id]);
+
+  console.log(dataLink);
 
   return (
     <div className="space-y-6">
@@ -46,7 +57,7 @@ export default function FolderIdPage() {
           </Button>
           <div className="flex items-center gap-2">
             <Folder className="h-5 w-5" />
-            <h2 className="text-2xl font-bold tracking-tight">Pasta livre</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{folderName}</h2>
           </div>
         </div>
 
