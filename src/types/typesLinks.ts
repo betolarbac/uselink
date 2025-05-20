@@ -6,7 +6,7 @@ export type Link = {
   categoryId?: string | null;
   folderId?: string | null;
   folder?: { id: string; name: string; isSecret: boolean } | null;
-  category?: { id: string; name: string } | null;
+  category?: { id: string; name: string; color: string } | null;
 };
 
 export type Folder = {
@@ -14,4 +14,3 @@ export type Folder = {
   name: string;
   isSecret: boolean;
 };
-

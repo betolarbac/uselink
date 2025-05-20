@@ -175,7 +175,7 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {link.category && (
-                      <Badge variant="outline" className="bg-muted">
+                      <Badge variant="outline" className="bg-muted" style={{ borderColor: link.category.color, background: link.category.color,}}>
                         {link.category.name}
                       </Badge>
                     )}
