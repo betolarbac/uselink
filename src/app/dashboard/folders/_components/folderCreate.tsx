@@ -1,5 +1,5 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
+//import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+//import { Switch } from "@/components/ui/switch";
 import { FolderPlus, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,6 +90,7 @@ export default function FolderCreate() {
                 )}
               />
 
+                   {/*
               <FormField
                 control={form.control}
                 name="isSecret"
@@ -112,7 +113,6 @@ export default function FolderCreate() {
                   </FormItem>
                 )}
               />
-
               {form.watch("isSecret") && (
                 <FormField
                   control={form.control}
@@ -132,6 +132,7 @@ export default function FolderCreate() {
                   )}
                 />
               )}
+              */}
             </div>
             <DialogFooter>
               <Button type="submit" className="dark:text-white" disabled={isSubmitting}>
