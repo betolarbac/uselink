@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CreateLink } from "../../_components/createLink";
 import { LinkTable } from "../../_components/links/link-table";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getLinksByFolderId } from "../../actions/linksActions";
 import {
   Table,
@@ -17,19 +17,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getFolderName } from "../actions/folderActions";
-
-type LinkData = Awaited<ReturnType<typeof getLinksByFolderId>>;
+import { Link } from "@/types/typesLinks";
 
 export default function FolderIdPage() {
   const router = useRouter();
   const params = useParams();
-  const [dataLink, setDataLink] = useState<LinkData | undefined>(undefined);
+  const [dataLink, setDataLink] = useState<Link[]>([]);
   const [folderName, setFolderName] = useState<string>("");
 
   useEffect(() => {
     async function getLinks() {
       const links = await getLinksByFolderId(params.id as string);
-      setDataLink(links);
+      setDataLink(links || []);
     }
 
     async function getFolderIdName() {
@@ -41,6 +40,8 @@ export default function FolderIdPage() {
     getFolderIdName();
     getLinks();
   }, [params.id]);
+
+  const memoizedDataLink = useMemo(() => dataLink, [dataLink]);
 
   return (
     <div className="space-y-6">
@@ -64,8 +65,8 @@ export default function FolderIdPage() {
         </div>
       </div>
 
-      {dataLink ? (
-        <LinkTable links={dataLink} />
+      {memoizedDataLink ? (
+        <LinkTable links={memoizedDataLink} />
       ) : (
         <div className="rounded-md border">
           <Table>
