@@ -45,6 +45,11 @@ model Link {
 
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
+
+  @@index([userId], name: "link_userId_idx")
+  @@index([folderId], name: "link_folderId_idx")
+  @@index([categoryId], name: "link_categoryId_idx")
+  @@index([createdAt], name: "link_createdAt_idx")
 }
 
 model Folder {
