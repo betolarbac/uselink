@@ -6,11 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Folder, FolderLock, Link2, Pen, Tag, Trash } from "lucide-react";
+import { Folder, Link2, Pen, Tag, Trash } from "lucide-react";
 import { getLinks } from "../../actions/linksActions";
+import { getFolders } from "../../folders/actions/folderActions";
+import { getCategories } from "../../categories/actions/categoriesActions";
 
 export default async function LinksData() {
-  const data = await getLinks();
+  const [data, folders, categories] = await Promise.all([
+    getLinks(),
+    getFolders(),
+    getCategories()
+  ]);
 
   return (
     <>
@@ -32,13 +38,7 @@ export default async function LinksData() {
             <Folder className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <FolderLock className="h-3 w-3 text-amber-500" />2 pastas
-                secretas
-              </span>
-            </p>
+            <div className="text-2xl font-bold">{folders.length}</div>
           </CardContent>
         </Card>
         <Card className="gap-0">
@@ -47,8 +47,10 @@ export default async function LinksData() {
             <Tag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
-            <p className="text-xs text-muted-foreground">Usado em 1 links</p>
+            <div className="text-2xl font-bold">{categories.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Usado em {data.filter(link => link.categoryId).length} links
+            </p>
           </CardContent>
         </Card>
       </div>
