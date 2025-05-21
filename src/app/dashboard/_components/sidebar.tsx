@@ -13,9 +13,31 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreateLink } from "./createLink";
+import { useEffect, useState } from "react";
+import { getFolders } from "../folders/actions/folderActions";
+
+interface Folder {
+  id: string;
+  name: string;
+  isSecret: boolean;
+  links: {
+    id: string;
+    title: string;
+  }[];
+}
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [userFolders, setUserFolders] = useState<Folder[]>([]);
+
+  useEffect(() => {
+    async function loadFolders() {
+      const folders = await getFolders();
+      setUserFolders(folders.slice(0, 5));
+    }
+    
+    loadFolders();
+  }, []);
 
   const routes = [
     {
@@ -81,25 +103,28 @@ export function Sidebar() {
             <span className="hidden md:inline-flex">Pastas</span>
           </div>
           <div className="mt-3 space-y-1">
-            <Link
-              href=""
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-            >
-              <Folder className="h-5 w-5" />
-              <span className="hidden truncate md:inline-flex">
-                Pasta Livre
-              </span>
-            </Link>
-
-            <Link
-              href=""
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-            >
-              <FolderLock className="h-5 w-5 text-amber-500" />
-              <span className="hidden truncate md:inline-flex">
-                Pasta Secreta
-              </span>
-            </Link>
+            {userFolders.length > 0 ? (
+              userFolders.map((folder) => (
+                <Link
+                  key={folder.id}
+                  href={`/dashboard/folders/${folder.id}`}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  {folder.isSecret ? (
+                    <FolderLock className="h-5 w-5 text-amber-500" />
+                  ) : (
+                    <Folder className="h-5 w-5" />
+                  )}
+                  <span className="hidden truncate md:inline-flex">
+                    {folder.name}
+                  </span>
+                </Link>
+              ))
+            ) : (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                <span className="hidden md:inline-flex">Nenhuma pasta encontrada</span>
+              </div>
+            )}
 
             <Link
               href="/dashboard/folders"
