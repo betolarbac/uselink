@@ -1,12 +1,7 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Folder } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { CreateLink } from "../../_components/createLink";
 import { LinkTable } from "../../_components/links/link-table";
-
-import { useEffect, useState, useMemo } from "react";
 import { getLinksByFolderId } from "../../actions/linksActions";
 import {
   Table,
@@ -17,32 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getFolderName } from "../actions/folderActions";
-import { Link } from "@/types/typesLinks";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default function FolderIdPage() {
-  const router = useRouter();
-  const params = useParams();
-  const [dataLink, setDataLink] = useState<Link[]>([]);
-  const [folderName, setFolderName] = useState<string>("");
+export default async function FolderIdPage({ params }: { params: { id: string } }) {
+  const {id} = await params;
 
-  useEffect(() => {
-    async function getLinks() {
-      const links = await getLinksByFolderId(params.id as string);
-      setDataLink(links || []);
-    }
+  const [links, folder] = await Promise.all([
+    getLinksByFolderId(id),
+    getFolderName(id)
+  ]);
 
-    async function getFolderIdName() {
-      const folderIdName = await getFolderName(params.id as string);
-
-      setFolderName(folderIdName?.name ?? "");
-    }
-
-    getFolderIdName();
-    getLinks();
-  }, [params.id]);
-
-  const memoizedDataLink = useMemo(() => dataLink, [dataLink]);
-
+  if (!folder) {
+    redirect("/dashboard/folders");
+  }
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -50,13 +33,15 @@ export default function FolderIdPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push("/dashboard/folders")}
+            asChild
           >
-            <ArrowLeft className="h-4 w-4" />
+            <Link href="/dashboard/folders">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </Button>
           <div className="flex items-center gap-2">
             <Folder className="h-5 w-5" />
-            <h2 className="text-2xl font-bold tracking-tight">{folderName}</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{folder?.name}</h2>
           </div>
         </div>
 
@@ -65,8 +50,8 @@ export default function FolderIdPage() {
         </div>
       </div>
 
-      {memoizedDataLink ? (
-        <LinkTable links={memoizedDataLink} />
+      {links && links.length > 0 ? (
+        <LinkTable links={links} />
       ) : (
         <div className="rounded-md border">
           <Table>
@@ -74,9 +59,7 @@ export default function FolderIdPage() {
               <TableRow>
                 <TableHead>Título</TableHead>
                 <TableHead className="hidden md:table-cell">URL</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Categoria
-                </TableHead>
+                <TableHead className="hidden md:table-cell">Categoria</TableHead>
                 <TableHead className="hidden md:table-cell">Pasta</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -84,7 +67,7 @@ export default function FolderIdPage() {
             <TableBody>
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  Carregando links...
+                  Nenhum link encontrado.
                 </TableCell>
               </TableRow>
             </TableBody>
