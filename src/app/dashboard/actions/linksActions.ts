@@ -28,6 +28,9 @@ export async function getLinks() {
     where: {
       userId: user?.id,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       folder: true,
       category: true,
@@ -42,6 +45,9 @@ export async function getLinksByFolderId(folderId: string) {
     where: {
       userId: user?.id,
       folderId,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
     include: {
       folder: true,
