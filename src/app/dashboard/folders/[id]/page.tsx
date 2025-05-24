@@ -15,12 +15,12 @@ import { getFolderName } from "../actions/folderActions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function FolderIdPage({ params }: { params: { id: string } }) {
-  const {id} = await params;
+export default async function FolderIdPage({params,}: {params: { id: string };}) {
+  const { id } = await params;
 
   const [links, folder] = await Promise.all([
     getLinksByFolderId(id),
-    getFolderName(id)
+    getFolderName(id),
   ]);
 
   if (!folder) {
@@ -30,18 +30,16 @@ export default async function FolderIdPage({ params }: { params: { id: string } 
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-          >
+          <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard/folders">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div className="flex items-center gap-2">
             <Folder className="h-5 w-5" />
-            <h2 className="text-2xl font-bold tracking-tight">{folder?.name}</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              {folder?.name}
+            </h2>
           </div>
         </div>
 
@@ -59,7 +57,9 @@ export default async function FolderIdPage({ params }: { params: { id: string } 
               <TableRow>
                 <TableHead>Título</TableHead>
                 <TableHead className="hidden md:table-cell">URL</TableHead>
-                <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                <TableHead className="hidden md:table-cell">
+                  Categoria
+                </TableHead>
                 <TableHead className="hidden md:table-cell">Pasta</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
