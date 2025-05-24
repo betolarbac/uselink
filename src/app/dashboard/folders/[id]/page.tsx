@@ -15,8 +15,10 @@ import { getFolderName } from "../actions/folderActions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function FolderIdPage({params,}: {params: { id: string };}) {
-  const { id } = await params;
+type tParams = Promise<{ id: string }>;
+
+export default async function FolderIdPage(props: { params: tParams }) {
+  const { id } = await props.params;
 
   const [links, folder] = await Promise.all([
     getLinksByFolderId(id),
