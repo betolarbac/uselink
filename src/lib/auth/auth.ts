@@ -3,6 +3,7 @@
 import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
@@ -102,5 +103,18 @@ export async function getCurrentUser() {
   } catch (error) {
     console.error("Erro ao verificar usuário atual:", error);
     return null;
+  }
+}
+
+export async function resetPassword(email: string) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { success: true, message: "Email de redefinição de senha enviado!" };
+  } catch (error) {
+    console.error("Erro ao enviar email de redefinição de senha:", error);
+    return {
+      success: false,
+      message: "Erro ao enviar email de redefinição de senha",
+    };
   }
 }
