@@ -1,51 +1,39 @@
 "use client"
 
-import type React from "react"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { formLoginSchema, FormLoginType } from "@/lib/validators/form-login"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { registerWithEmail } from "@/lib/auth/auth"
+import { formRegisterSchema, FormRegisterType } from "@/lib/validators/form-login"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Link2 } from "lucide-react"
-import { loginWithEmail } from "@/lib/auth/auth"
-import { loginWithGoogle } from "@/lib/auth/client-auth"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+import { useForm } from "react-hook-form"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter()
 
-  const form = useForm<FormLoginType>({
-    resolver: zodResolver(formLoginSchema),
+  const form = useForm<FormRegisterType>({
+    resolver: zodResolver(formRegisterSchema),
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     }
   })
 
-  async function onSubmit(data: FormLoginType) {
+ async function onSubmit(data: FormRegisterType) {
     try {
-      const user = await loginWithEmail(data.email, data.password);
-      if (user) {
-        router.push("/dashboard");
-      }
+      await registerWithEmail(data.email, data.password, data.name)
+
+      router.push("/dashboard")
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
+      console.error(error)
     }
   }
 
-  async function handleGoogleLogin() {
-    try {
-      const user = await loginWithGoogle();
-      if (user) {
-        router.push("/dashboard");
-      }
-    } catch (error) {
-      console.error("Erro ao fazer login com Google:", error);
-    }
-  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -53,12 +41,24 @@ export default function LoginPage() {
         <div className="mx-auto w-full max-w-sm">
           <div className="flex flex-col items-center space-y-2 text-center">
             <Link2 className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">Entrar no UseLInk</h1>
-            <p className="text-sm text-muted-foreground">Entre com seu email e senha para acessar sua conta</p>
+            <h1 className="text-2xl font-bold">Criar uma conta</h1>
+            <p className="text-sm text-muted-foreground">Registre-se para começar a organizar seus links</p>
           </div>
           <div className="mt-8">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField 
+                control={form.control}
+                name="name"
+                render={({field}) => (
+                  <FormItem className="space-y-1 mb-4">
+                    <FormLabel>Nome</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Seu nome" {...field} autoComplete="username" />
+                    </FormControl>
+                  </FormItem>
+                )}
+                />
                 <FormField 
                 control={form.control}
                 name="email"
@@ -84,17 +84,14 @@ export default function LoginPage() {
                 )}
                 />
 
-                <Button type="submit" className="w-full dark:text-white">Entrar</Button>
+                <Button type="submit" className="w-full dark:text-white">Registrar</Button>
               </form>
             </Form>
-            <Button variant="outline" className="w-full mt-4" onClick={handleGoogleLogin}>
-                Login with Google
-              </Button>
           
             <div className="mt-4 text-center text-sm">
-              Não tem uma conta?{" "}
-              <Link href="/register" className="text-primary underline-offset-4 hover:underline">
-                Registre-se
+            Já tem uma conta?{" "}
+              <Link href="/auth/login" className="text-primary underline-offset-4 hover:underline">
+                Entrar
               </Link>
             </div>
           </div>

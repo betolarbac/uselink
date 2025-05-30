@@ -5,8 +5,8 @@ const protectedRoutes = [
 ];
 
 const publicRoutes = [
-  '/login',
-  '/register',
+  '/auth/login',
+  '/auth/register',
 ];
 
 export default async function middleware(request: NextRequest) {
@@ -19,7 +19,7 @@ export default async function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get('session-token')?.value;
   
   if (isProtectedRoute && !sessionToken) {
-    const url = new URL('/login', request.url);
+    const url = new URL('/auth/login', request.url);
     url.searchParams.set('callbackUrl', encodeURI(request.url));
     return NextResponse.redirect(url);
   }

@@ -35,7 +35,7 @@ export default function Home() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/login">
+            <Link href="/auth/login">
               <Button
                 variant="ghost"
                 className="text-gray-300 hover:text-white"
@@ -43,7 +43,7 @@ export default function Home() {
                 Entrar
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/auth/register">
               <Button size="sm" className="dark:text-white">
                 Registrar
               </Button>
@@ -256,7 +256,7 @@ export default function Home() {
                     </li>
                   </ul>
                   <div className="mt-6">
-                    <Link href="/register">
+                    <Link href="/auth/register">
                       <Button className="w-full dark:text-white">
                         Começar grátis
                       </Button>
@@ -369,7 +369,7 @@ export default function Home() {
                     </li>
                   </ul>
                   <div className="mt-6">
-                    <Link href="/register?plan=premium">
+                    <Link href="/auth/register?plan=premium">
                       <Button
                         className="w-full dark:text-white"
                         variant="default"
