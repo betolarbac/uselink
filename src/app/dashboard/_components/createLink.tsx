@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -37,6 +37,7 @@ import {
 import { Folder } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
 import { getCategories } from "../categories/actions/categoriesActions";
+import { useCompletion } from "@ai-sdk/react";
 
 type CategoriesType = {
   name: string;
@@ -92,6 +93,56 @@ export function CreateLink() {
       categoryId: undefined,
     },
   });
+
+  const currentUrlValue = form.watch("url");
+
+  const {
+    completion,
+    complete,
+    isLoading: isGeneratingDescription,
+    error: completionError,
+    setCompletion,
+  } = useCompletion({
+    api: "/api/generate-description",
+    onFinish: (_prompt, fullCompletionText) => {
+      form.setValue("description", fullCompletionText, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      console.log("Geração de descrição finalizada.");
+    },
+    onError: (err) => {
+      console.error("Erro ao gerar descrição com IA:", err);
+      alert(`Erro ao gerar descrição: ${err.message}`);
+    },
+  });
+
+  useEffect(() => {
+    if (
+      isGeneratingDescription ||
+      completion !== form.getValues("description")
+    ) {
+      form.setValue("description", completion, {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+    }
+  }, [completion, form, isGeneratingDescription]);
+
+  async function handleGenerateDescriptionClick() {
+    const urlValue = form.getValues("url");
+
+    const isUrlValid = await form.trigger("url");
+    if (!isUrlValid || !urlValue) {
+      alert("Por favor, insira uma URL válida para gerar a descrição.");
+      return;
+    }
+    form.setValue("description", "");
+    setCompletion("");
+    complete("", {
+      body: { url: urlValue },
+    });
+  }
 
   async function onSubmit(data: CreateLinkType) {
     try {
@@ -159,11 +210,33 @@ export function CreateLink() {
                   <FormLabel>Descrição (opcional)</FormLabel>
                   <FormControl>
                     <Textarea
+                      disabled={isGeneratingDescription}
                       placeholder="Descrição do link"
                       {...field}
                       value={field.value || ""}
                     />
                   </FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateDescriptionClick}
+                    disabled={isGeneratingDescription || !currentUrlValue}
+                    className="px-2 py-1"
+                  >
+                    {isGeneratingDescription ? (
+                      "Gerando..."
+                    ) : (
+                      <>
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Gerar com IA
+                      </>
+                    )}
+                  </Button>
+                  {completionError && (
+                    <FormMessage className="text-red-500">
+                      {completionError.message}
+                    </FormMessage>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
