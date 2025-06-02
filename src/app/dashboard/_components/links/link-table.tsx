@@ -20,12 +20,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Edit, ExternalLink, Eye, Trash2 } from "lucide-react";
+import { Edit, ExternalLink, Eye, Loader, Trash2 } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
 import Image from "next/image";
 import { LinkDetailsModal } from "./LinkDetailsModal";
+import { toast } from "sonner";
 
 interface LinkTableProps {
   links: Link[];
@@ -42,6 +43,7 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
   const [linkToEdit, setLinkToEdit] = useState<Link | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState<Link | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const linksPerPage = 10;
 
@@ -83,11 +85,16 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
 
   const confirmDelete = async () => {
     if (linkToDelete) {
+      setIsDeleting(true);
       try {
         await deleteLink(linkToDelete);
         setLinks(links.filter((link) => link.id !== linkToDelete));
+        toast.success("Link Excluído!", {description: "O link foi excluído com sucesso."})
       } catch (error) {
+        toast.error("Erro ao excluir",{description: "Não foi possível excluir o link. Tente novamente."})
         console.error("Erro ao excluir link:", error);
+      } finally {
+        setIsDeleting(false);
       }
     }
     setLinkToDelete(null);
@@ -279,8 +286,15 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
             >
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Excluir
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+            {isDeleting ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Excluindo...
+              </>
+            ) : (
+              "Excluir"
+            )}
             </Button>
           </DialogFooter>
         </DialogContent>
