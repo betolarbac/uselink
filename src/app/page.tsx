@@ -63,10 +63,12 @@ export default function Home() {
               Guarde, organize e compartilhe seus links favoritos em um só
               lugar. Com pastas, categorias e proteção por senha.
             </p>
-            <div className="flex flex-col md:flex-row justify-center gap-4">
-              <Button className="bg-bg-primary hover:bg-brand-darkBlue text-white px-8 py-6 text-lg">
-                Começar agora
-              </Button>
+            <div className="flex flex-col md:flex-row justify-center gap-4 relative z-10">
+              <Link href="/auth/login">
+                <Button className="bg-primary text-white px-8 py-6 text-lg">
+                  Começar agora
+                </Button>
+              </Link>
               <Button variant="outline" className="px-8 py-6 text-lg">
                 Ver demonstração
               </Button>
