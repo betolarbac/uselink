@@ -36,6 +36,7 @@ import {
 import { Folder, Link } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
 import { getCategories } from "../../categories/actions/categoriesActions";
+import { toast } from "sonner";
 
 interface LinkEditProps {
   link: Link;
@@ -121,8 +122,10 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
       onOpenChange(false);
 
       router.refresh();
+      toast.success("Link atualizado com sucesso!");
     } catch (error) {
       console.error("Erro ao atualizar link:", error);
+      toast.error("Erro ao atualizar link!");
     } finally {
       setIsSubmitting(false);
     }

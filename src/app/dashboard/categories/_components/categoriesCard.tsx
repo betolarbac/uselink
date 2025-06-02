@@ -12,6 +12,7 @@ import { Trash2 } from "lucide-react";
 import { useTransition } from "react";
 import { deleteCategory } from "../actions/categoriesActions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface CategoriasCardProps {
   id: string;
@@ -26,8 +27,14 @@ export default function CategoriesCard(dataCategory: CategoriasCardProps) {
 
   const handleDeleteCategory = () => {
     startTransition(async () => {
-      await deleteCategory(dataCategory.id);
+      try {
+        await deleteCategory(dataCategory.id);
       router.refresh();
+      toast.success("Categoria deletada");
+      } catch (error) {
+        console.error(error);
+        toast.error("Error ao deletar categoria");
+      }
     });
   };
 
