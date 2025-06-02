@@ -3,13 +3,13 @@ import FolderCreate from "./_components/folderCreate";
 import { getFolders } from "./actions/folderActions";
 import FolderSearchInput from "./_components/folderSearchInput";
 import { loadSearchParams } from "./search-params";
+import { type SearchParams } from 'nuqs/server'
 
+interface FoldersPageProps {
+  searchParams: SearchParams
+}
 
-export default async function FoldersPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+export default async function FoldersPage({ searchParams }: FoldersPageProps) {
   const { q: searchTerm } = await loadSearchParams(searchParams ?? {});
 
   const folders = await getFolders(searchTerm);
