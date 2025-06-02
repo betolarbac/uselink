@@ -2,13 +2,24 @@
 
 import { getCurrentUser } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
-export async function getFolders() {
+export async function getFolders(searchTerm?: string) {
   const user = await getCurrentUser();
+
+  const whereClause: Prisma.FolderWhereInput = {
+    userId: user?.id
+  }
+
+  if (searchTerm && searchTerm.trim() !== "") {
+    whereClause.name = {
+      contains: searchTerm.trim(),
+      mode: "insensitive",
+    }
+  }
+
   return await prisma.folder.findMany({
-    where: {
-      userId: user?.id,
-    },
+    where: whereClause,
     select: {
       id: true,
       name: true,
@@ -19,6 +30,9 @@ export async function getFolders() {
           title: true,
         }
       }
+    },
+    orderBy: {
+      name: "asc"
     }
   });
 }

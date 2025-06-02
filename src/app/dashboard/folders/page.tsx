@@ -1,10 +1,18 @@
-import { Search } from "lucide-react";
 import FolderCard from "./_components/folderCard";
 import FolderCreate from "./_components/folderCreate";
 import { getFolders } from "./actions/folderActions";
+import FolderSearchInput from "./_components/folderSearchInput";
+import { loadSearchParams } from "./search-params";
 
-export default async function FoldersPage() {
-  const folders = await getFolders();
+
+export default async function FoldersPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const { q: searchTerm } = await loadSearchParams(searchParams ?? {});
+
+  const folders = await getFolders(searchTerm);
   return (
     <div className="flex-1">
       <div>
@@ -19,28 +27,29 @@ export default async function FoldersPage() {
         </div>
 
         <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar pasta..."
-              className="w-full max-w-md bg-background/80 pl-9 py-2 rounded-md text-sm border border-border"
-            />
-          </div>
+        <FolderSearchInput initialSearchTerm={searchTerm} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {folders.map((folder) => (
-            <FolderCard
-              id={folder.id}
-              key={folder.id}
-              name={folder.name}
-              subfoldersCount=""
-              isSecret={folder.isSecret}
-              linksCount={folder.links.length}
-            />
-          ))}
-        </div>
+        {folders.length === 0 ? (
+          searchTerm ? (
+            <p className="text-muted-foreground text-center py-8">Nenhuma pasta encontrada para `&quot;`{searchTerm}`&quot;`.</p>
+          ) : (
+            <p className="text-muted-foreground text-center py-8">Você ainda não criou nenhuma pasta.</p>
+          )
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {folders.map((folder) => (
+              <FolderCard
+                id={folder.id}
+                key={folder.id}
+                name={folder.name}
+                subfoldersCount={""} // Este valor não parece estar sendo populado/utilizado
+                isSecret={folder.isSecret}
+                linksCount={folder.links.length}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
