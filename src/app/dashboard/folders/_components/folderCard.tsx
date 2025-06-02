@@ -11,6 +11,7 @@ import { deleteFolder } from "../actions/folderActions";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface FolderCardProps {
   id: string;
@@ -27,15 +28,28 @@ export default function FolderCard(dataFolder: FolderCardProps) {
 
   const handleDeleteFolder = () => {
     startTransition(async () => {
-      await deleteFolder(dataFolder.id);
-      router.refresh();
+      try {
+        await deleteFolder(dataFolder.id);
+        router.refresh();
+        toast.success("Pasta Excluída!", {
+          description: `A pasta "${dataFolder.name}" foi excluída.`,
+        });
+      } catch (error) {
+        console.error("Erro ao excluir pasta:", error);
+        toast.error("Erro ao excluir", {
+          description: "Não foi possível excluir a pasta.",
+        });
+      }
     });
   };
 
   return (
     <div className="group bg-card border border-border rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
-        <div className="flex items-start justify-between">
-    <Link href={`/dashboard/folders/${dataFolder.id}`} className="flex-1 p-4">
+      <div className="flex items-start justify-between">
+        <Link
+          href={`/dashboard/folders/${dataFolder.id}`}
+          className="flex-1 p-4"
+        >
           <div className="flex gap-3 items-center">
             <div className={`p-2.5 rounded-md`}>
               <div className="relative">
@@ -63,45 +77,44 @@ export default function FolderCard(dataFolder: FolderCardProps) {
               </p>
             </div>
           </div>
-          </Link>
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity p-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="5" r="1"></circle>
-                    <circle cx="12" cy="12" r="1"></circle>
-                    <circle cx="12" cy="19" r="1"></circle>
-                  </svg>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                  <Edit className="h-4 w-4" /> Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
-                  onClick={handleDeleteFolder}
-                  disabled={isPending}
+        </Link>
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <Trash className="h-4 w-4" />{" "}
-                  {isPending ? "Excluindo..." : "Excluir"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                <Edit className="h-4 w-4" /> Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                onClick={handleDeleteFolder}
+                disabled={isPending}
+              >
+                <Trash className="h-4 w-4" />{" "}
+                {isPending ? "Excluindo..." : "Excluir"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
+    </div>
   );
 }
