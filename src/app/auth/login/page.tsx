@@ -14,13 +14,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link2 } from "lucide-react";
+import { Link2, Loader } from "lucide-react";
 import { loginWithEmail } from "@/lib/auth/auth";
 import { loginWithGoogle } from "@/lib/auth/client-auth";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormLoginType>({
     resolver: zodResolver(formLoginSchema),
@@ -31,13 +34,22 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: FormLoginType) {
+    setIsLoading(true);
     try {
       const user = await loginWithEmail(data.email, data.password);
       if (user) {
+        toast.success("Login realizado com sucesso!", {
+          description: "Redirecionando para o dashboard...",
+        });
         router.push("/dashboard");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
+      toast.error("Erro no Login", {
+        description: "Email ou senha inválidos.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -108,8 +120,19 @@ export default function LoginPage() {
                   )}
                 />
 
-                <Button type="submit" className="w-full dark:text-white">
+                <Button
+                  type="submit"
+                  className="w-full dark:text-white"
+                  disabled={isLoading}
+                >
                   Entrar
+                  {isLoading ? (
+                    <>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" /> Entrando...
+                    </>
+                  ) : (
+                    <>Entrar</>
+                  )}
                 </Button>
               </form>
             </Form>
