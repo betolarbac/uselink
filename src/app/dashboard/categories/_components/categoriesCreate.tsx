@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CreateCategories() {
   const [open, setOpen] = useState(false);
@@ -49,8 +50,10 @@ export default function CreateCategories() {
       form.reset();
       setOpen(false);
       router.refresh();
+      toast.success("Categoria criada com sucesso!");
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao criar categoria!");
     } finally {
       setIsSubmitting(false);
     }
