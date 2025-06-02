@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Sparkles } from "lucide-react";
+import { Loader, Plus, Sparkles } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -38,6 +38,7 @@ import { Folder } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
 import { getCategories } from "../categories/actions/categoriesActions";
 import { useCompletion } from "@ai-sdk/react";
+import { toast } from "sonner";
 
 type CategoriesType = {
   name: string;
@@ -113,7 +114,7 @@ export function CreateLink() {
     },
     onError: (err) => {
       console.error("Erro ao gerar descrição com IA:", err);
-      alert(`Erro ao gerar descrição: ${err.message}`);
+      toast.error("Erro na IA", {description: `Não foi possível gerar a descrição: ${err.message}`})
     },
   });
 
@@ -152,8 +153,14 @@ export function CreateLink() {
       form.reset();
       setOpen(false);
       router.refresh();
+      toast.success("Link Criado!", {
+        description: `O link "${data.title}" foi adicionado com sucesso.`,
+      });
     } catch (error) {
       console.error("Erro ao criar link:", error);
+      toast.error("Erro ao criar link", {
+        description: "Não foi possível salvar o link. Tente novamente.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -308,7 +315,13 @@ export function CreateLink() {
                 disabled={isSubmitting}
                 className="dark:text-white"
               >
-                {isSubmitting ? "Salvando..." : "Salvar link"}
+                {isSubmitting ? (
+                  <>
+                    <Loader className="mr-2 h4 w-4 animate-spin" /> Salvando...
+                  </>
+                ) : (
+                  <>Salvar link</>
+                )}
               </Button>
             </DialogFooter>
           </form>
