@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { createFolder } from "../actions/folderActions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function FolderCreate() {
   const [open, setOpen] = useState(false);
@@ -42,7 +43,7 @@ export default function FolderCreate() {
       parentId: null,
     },
   });
-// TODO:  falta ajustar senhas nas pastas cadastradas
+  // TODO:  falta ajustar senhas nas pastas cadastradas
   async function onSubmit(data: CreateFolderType) {
     try {
       setIsSubmitting(true);
@@ -51,8 +52,14 @@ export default function FolderCreate() {
       form.reset();
       setOpen(false);
       router.refresh();
+      toast.success("Pasta Criada!", {
+        description: `A pasta "${data.name}" foi criada com sucesso.`,
+      });
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao criar pasta", {
+        description: `Não foi possível criar a pasta. Tente novamente.`,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -90,7 +97,7 @@ export default function FolderCreate() {
                 )}
               />
 
-                   {/*
+              {/*
               <FormField
                 control={form.control}
                 name="isSecret"
@@ -135,8 +142,19 @@ export default function FolderCreate() {
               */}
             </div>
             <DialogFooter>
-              <Button type="submit" className="dark:text-white" disabled={isSubmitting}>
-                {isSubmitting ? (<><Loader className="h-5 w-5 animate-spin"/> <span>Criando...</span></>) : "Criar Pasta"}
+              <Button
+                type="submit"
+                className="dark:text-white"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader className="h-5 w-5 animate-spin" />{" "}
+                    <span>Criando...</span>
+                  </>
+                ) : (
+                  "Criar Pasta"
+                )}
               </Button>
             </DialogFooter>
           </form>
