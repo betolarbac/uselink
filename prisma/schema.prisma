@@ -6,11 +6,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["app"]
 }
 
 model User {
@@ -20,11 +22,11 @@ model User {
   name       String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  plan       Plan       @default(FREE)
 
   links      Link[]
   folders    Folder[]
   categories Category[]
+  @@schema("app")
 }
 
 model Link {
@@ -50,6 +52,7 @@ model Link {
   @@index([folderId], name: "link_folderId_idx")
   @@index([categoryId], name: "link_categoryId_idx")
   @@index([createdAt], name: "link_createdAt_idx")
+  @@schema("app")
 }
 
 model Folder {
@@ -68,6 +71,7 @@ model Folder {
   subfolders Folder[]   @relation("Subfolders")
 
   links      Link[]
+  @@schema("app")
 }
 
 model Category {
@@ -80,9 +84,5 @@ model Category {
   userId     String
 
   links      Link[]
-}
-
-enum Plan {
-  FREE
-  PREMIUM
+  @@schema("app")
 }
