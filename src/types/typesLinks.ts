@@ -7,6 +7,7 @@ export type Link = {
   folderId?: string | null;
   folder?: { id: string; name: string; isSecret: boolean } | null;
   category?: { id: string; name: string; color: string } | null;
+  isPublic: boolean;
 };
 
 export type Folder = {

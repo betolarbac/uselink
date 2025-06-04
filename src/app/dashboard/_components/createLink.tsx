@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -38,15 +39,16 @@ import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { useFolders } from "@/hooks/useFolders";
 import { useCategories } from "@/hooks/useCategories";
+import { Switch } from "@/components/ui/switch";
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userInterruptedAIRef = useRef(false);
   const router = useRouter();
-  const {folders, isLoadingFolders, foldersError} = useFolders(open);
-  const {categories, isLoadingCategories, categoriesError} = useCategories(open)
-
+  const { folders, isLoadingFolders, foldersError } = useFolders(open);
+  const { categories, isLoadingCategories, categoriesError } =
+    useCategories(open);
 
   const form = useForm<CreateLinkType>({
     resolver: zodResolver(createLinkSchema),
@@ -55,9 +57,9 @@ export function CreateLink() {
       url: "",
       description: "",
       customSlug: "",
-      isSecret: false,
       folderId: undefined,
       categoryId: undefined,
+      isPublic: false,
     },
   });
 
@@ -73,7 +75,7 @@ export function CreateLink() {
   } = useCompletion({
     api: "/api/generate-description",
     onFinish: (_prompt, fullCompletionText) => {
-      if(!userInterruptedAIRef.current) {
+      if (!userInterruptedAIRef.current) {
         form.setValue("description", fullCompletionText, {
           shouldValidate: true,
           shouldDirty: true,
@@ -85,7 +87,9 @@ export function CreateLink() {
     },
     onError: (err) => {
       console.error("Erro ao gerar descrição com IA:", err);
-      toast.error("Erro na IA", {description: `Não foi possível gerar a descrição: ${err.message}`})
+      toast.error("Erro na IA", {
+        description: `Não foi possível gerar a descrição: ${err.message}`,
+      });
       userInterruptedAIRef.current = false;
     },
   });
@@ -188,7 +192,11 @@ export function CreateLink() {
                       disabled={isGeneratingDescription}
                       placeholder="Descrição do link"
                       {...field}
-                      value={isGeneratingDescription && !userInterruptedAIRef.current ? completion : field.value}
+                      value={
+                        isGeneratingDescription && !userInterruptedAIRef.current
+                          ? completion
+                          : field.value
+                      }
                     />
                   </FormControl>
                   <Button
@@ -199,10 +207,10 @@ export function CreateLink() {
                     className="px-2 py-1"
                   >
                     {isGeneratingDescription ? (
-                     <>
-                      <Loader className="h-4 w-4 mr-2 animate-spin"/>
-                      Gerando...
-                     </>
+                      <>
+                        <Loader className="h-4 w-4 mr-2 animate-spin" />
+                        Gerando...
+                      </>
                     ) : (
                       <>
                         <Sparkles className="h-4 w-4 mr-2" />
@@ -216,6 +224,28 @@ export function CreateLink() {
                     </FormMessage>
                   )}
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isPublic"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Link Público</FormLabel>
+                    <FormDescription className="text-xs">
+                      Se ativado, este link poderá aparecer na página
+                      &quot;Discovery&quot; para outros usuários.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -238,7 +268,9 @@ export function CreateLink() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>
+                          Sem pasta
+                        </SelectItem>
                         {folders.map((folder) => (
                           <SelectItem key={folder.id} value={folder.id}>
                             {folder.name} {folder.isSecret ? "🔒" : ""}
@@ -246,7 +278,11 @@ export function CreateLink() {
                         ))}
                       </SelectContent>
                     </Select>
-                    {foldersError && <p className="text-sm text-destructive mt-1">Erro ao carregar pastas.</p>}
+                    {foldersError && (
+                      <p className="text-sm text-destructive mt-1">
+                        Erro ao carregar pastas.
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -269,7 +305,9 @@ export function CreateLink() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>
+                          Sem pasta
+                        </SelectItem>
                         {categories.map((categoria) => (
                           <SelectItem key={categoria.id} value={categoria.id}>
                             {categoria.name}
@@ -277,7 +315,11 @@ export function CreateLink() {
                         ))}
                       </SelectContent>
                     </Select>
-                    {categoriesError && <p className="text-sm text-destructive mt-1">Erro ao carregar categorias.</p>}
+                    {categoriesError && (
+                      <p className="text-sm text-destructive mt-1">
+                        Erro ao carregar categorias.
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

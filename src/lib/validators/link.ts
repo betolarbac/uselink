@@ -6,10 +6,10 @@ export const createLinkSchema = z.object({
   url: z.string().url(),
   description: z.string().optional(),
   customSlug: z.string().optional(),
-  isSecret: z.boolean().optional(),
   folderId: z.string().optional(),
   categoryId: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  isPublic: z.boolean(),
 });
 
 export type CreateLinkType = z.infer<typeof createLinkSchema>

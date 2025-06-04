@@ -17,6 +17,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,6 +38,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useFolders } from "@/hooks/useFolders";
 import { useCategories } from "@/hooks/useCategories";
+import { Switch } from "@/components/ui/switch";
 
 interface LinkEditProps {
   link: Link;
@@ -45,10 +47,16 @@ interface LinkEditProps {
   onLinkUpdated: (updatedLink: Link) => void;
 }
 
-export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditProps) {
+export function LinkEdit({
+  link,
+  open,
+  onOpenChange,
+  onLinkUpdated,
+}: LinkEditProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {folders, isLoadingFolders, foldersError} = useFolders(open);
-  const {categories, isLoadingCategories, categoriesError} = useCategories(open)
+  const { folders, isLoadingFolders, foldersError } = useFolders(open);
+  const { categories, isLoadingCategories, categoriesError } =
+    useCategories(open);
   const router = useRouter();
 
   const form = useForm<CreateLinkType>({
@@ -58,9 +66,9 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
       url: link.url,
       description: link.description || "",
       customSlug: "",
-      isSecret: false,
       folderId: link.folderId || undefined,
       categoryId: link.categoryId || undefined,
+      isPublic: link.isPublic,
     },
   });
 
@@ -70,23 +78,22 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
       url: link.url,
       description: link.description || "",
       customSlug: "",
-      isSecret: false,
       folderId: link.folderId || undefined,
       categoryId: link.categoryId || undefined,
+      isPublic: link.isPublic,
     });
   }, [link, form]);
-
 
   async function onSubmit(data: CreateLinkType) {
     try {
       setIsSubmitting(true);
       await updateLink(link.id, data);
-      
+
       const updatedLink = {
         ...link,
         ...data,
       };
-      
+
       onLinkUpdated(updatedLink as Link);
       onOpenChange(false);
 
@@ -155,40 +162,68 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
               )}
             />
 
-            <div className="flex gap-4">
             <FormField
               control={form.control}
-              name="folderId"
+              name="isPublic"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Pasta</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                    disabled={isLoadingFolders}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma pasta" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none" disabled>Sem pasta</SelectItem>
-                      {folders.map((folder) => (
-                        <SelectItem key={folder.id} value={folder.id}>
-                          {folder.name} {folder.isSecret ? "🔒" : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {foldersError && <p className="text-sm text-destructive mt-1">Erro ao carregar pastas.</p>}
-                  <FormMessage />
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Link Público</FormLabel>
+                    <FormDescription className="text-xs">
+                      Se ativado, este link poderá aparecer na página
+                      &quot;Discovery&quot; para outros usuários.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
-            
-            <FormField
+
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="folderId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Pasta</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                      disabled={isLoadingFolders}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma pasta" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none" disabled>
+                          Sem pasta
+                        </SelectItem>
+                        {folders.map((folder) => (
+                          <SelectItem key={folder.id} value={folder.id}>
+                            {folder.name} {folder.isSecret ? "🔒" : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {foldersError && (
+                      <p className="text-sm text-destructive mt-1">
+                        Erro ao carregar pastas.
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
                 control={form.control}
                 name="categoryId"
                 render={({ field }) => (
@@ -205,7 +240,9 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>
+                          Sem pasta
+                        </SelectItem>
                         {categories.map((categoria) => (
                           <SelectItem key={categoria.id} value={categoria.id}>
                             {categoria.name}
@@ -213,14 +250,17 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                         ))}
                       </SelectContent>
                     </Select>
-                    {categoriesError && <p className="text-sm text-destructive mt-1">Erro ao carregar categorias.</p>}
+                    {categoriesError && (
+                      <p className="text-sm text-destructive mt-1">
+                        Erro ao carregar categorias.
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
             </div>
-            
+
             <DialogFooter>
               <Button
                 type="submit"

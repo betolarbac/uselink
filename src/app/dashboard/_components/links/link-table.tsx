@@ -130,6 +130,7 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
               <TableHead className="hidden md:table-cell">URL</TableHead>
               <TableHead className="hidden md:table-cell">Categoria</TableHead>
               <TableHead className="hidden md:table-cell">Pasta</TableHead>
+              <TableHead className="hidden md:table-cell">Estado</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -178,6 +179,9 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {link.folder && link.folder.name}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {link.isPublic ? "Público" : "Privado"}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
