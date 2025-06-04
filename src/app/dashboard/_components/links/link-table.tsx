@@ -77,7 +77,7 @@ export function LinkTable({
       link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       link.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (contexto === "discovery" &&
-        link.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())) || // Busca por autor no discovery
+        link.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
       link.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -156,11 +156,11 @@ export function LinkTable({
               <TableHead>Título</TableHead>
               <TableHead className="hidden md:table-cell">URL</TableHead>
               {contexto === "discovery" && (
-                <TableHead className="hidden lg:table-cell">Autor</TableHead> // Nova coluna para Autor
+                <TableHead className="hidden lg:table-cell">Autor</TableHead> 
               )}
               <TableHead className="hidden md:table-cell">Categoria</TableHead>
               {contexto === "dashboard" && (
-                <TableHead className="hidden md:table-cell">Pasta</TableHead> // Coluna de Pasta apenas no dashboard
+                <TableHead className="hidden md:table-cell">Pasta</TableHead> 
               )}
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -173,7 +173,6 @@ export function LinkTable({
                   className="h-24 text-center"
                 >
                   {" "}
-                  {/* Ajustar colSpan */}
                   Carregando links...
                 </TableCell>
               </TableRow>
@@ -184,7 +183,6 @@ export function LinkTable({
                   className="h-24 text-center"
                 >
                   {" "}
-                  {/* Ajustar colSpan */}
                   Nenhum link encontrado.
                 </TableCell>
               </TableRow>
@@ -275,7 +273,7 @@ export function LinkTable({
                         <Eye className="h-4 w-4" />
                       </Button>
 
-                      {contexto === "dashboard" && ( // Ações de Editar e Deletar apenas no dashboard
+                      {contexto === "dashboard" && (
                         <>
                           <Button
                             variant="ghost"
