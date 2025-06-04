@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Edit, ExternalLink, Eye, Loader, Trash2 } from "lucide-react";
+import { Edit, ExternalLink, Eye, Loader, Lock, LockOpen, Trash2 } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
@@ -158,7 +158,11 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-primary hover:underline"
                     >
-                      <FaviconDisplay linkUrl={link.url} size={16} className="h-4 w-4 flex-shrink-0" />
+                      <FaviconDisplay
+                        linkUrl={link.url}
+                        size={16}
+                        className="h-4 w-4 flex-shrink-0"
+                      />
                       <span className="truncate">{link.url}</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -181,7 +185,17 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                     {link.folder && link.folder.name}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {link.isPublic ? "Público" : "Privado"}
+                    {link.isPublic ? (
+                      <span className="flex w-fit items-center p-1 rounded bg-accent text-accent-foreground">
+                        <LockOpen className="h-4 w-4 mr-2" />
+                        Público
+                      </span>
+                    ) : (
+                      <span className="flex w-fit items-center p-1 rounded bg-[#FF173F2D] text-[#FF6465EB]">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Privado
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
