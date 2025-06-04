@@ -24,9 +24,9 @@ import { Edit, ExternalLink, Eye, Loader, Trash2 } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
-import Image from "next/image";
 import { LinkDetailsModal } from "./LinkDetailsModal";
 import { toast } from "sonner";
+import { FaviconDisplay } from "./FaviconDisplay";
 
 interface LinkTableProps {
   links: Link[];
@@ -48,18 +48,8 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
   const linksPerPage = 10;
 
   useEffect(() => {
-    async function fetchLinks() {
-      try {
-        setLoading(true);
-        setLinks(dataLinks);
-      } catch (error) {
-        console.error("Erro ao buscar links:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLinks();
+    setLinks(dataLinks);
+    setLoading(false);
   }, [dataLinks]);
 
   const visibleLinks = links.filter((link) => !link.folder?.isSecret);
@@ -89,9 +79,13 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
       try {
         await deleteLink(linkToDelete);
         setLinks(links.filter((link) => link.id !== linkToDelete));
-        toast.success("Link Excluído!", {description: "O link foi excluído com sucesso."})
+        toast.success("Link Excluído!", {
+          description: "O link foi excluído com sucesso.",
+        });
       } catch (error) {
-        toast.error("Erro ao excluir",{description: "Não foi possível excluir o link. Tente novamente."})
+        toast.error("Erro ao excluir", {
+          description: "Não foi possível excluir o link. Tente novamente.",
+        });
         console.error("Erro ao excluir link:", error);
       } finally {
         setIsDeleting(false);
@@ -163,26 +157,21 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-primary hover:underline"
                     >
-                      <Image
-                        src={`https://www.google.com/s2/favicons?domain=${
-                          new URL(link.url).hostname
-                        }&sz=32`}
-                        alt="Favicon"
-                        className="h-4 w-4"
-                        width={16}
-                        height={16}
-                        onError={(e) => {
-                          // Fallback para quando o favicon não for encontrado
-                          (e.target as HTMLImageElement).style.display = "none";
-                        }}
-                      />
-                      {link.url}
+                      <FaviconDisplay linkUrl={link.url} size={16} className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">{link.url}</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {link.category && (
-                      <Badge variant="outline" className="bg-muted" style={{ borderColor: link.category.color, background: link.category.color,}}>
+                      <Badge
+                        variant="outline"
+                        className="bg-muted"
+                        style={{
+                          borderColor: link.category.color,
+                          background: link.category.color,
+                        }}
+                      >
                         {link.category.name}
                       </Badge>
                     )}
@@ -286,15 +275,19 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
             >
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-            {isDeleting ? (
-              <>
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
-                Excluindo...
-              </>
-            ) : (
-              "Excluir"
-            )}
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                "Excluir"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
