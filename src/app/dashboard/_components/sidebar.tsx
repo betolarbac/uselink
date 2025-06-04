@@ -5,10 +5,11 @@ import {
   Folder,
   FolderLock,
   Home,
-  Link2,
+  Link2 as Link2Icon,
   Plus,
   Settings,
   Tag,
+  Compass,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,6 +48,12 @@ export function Sidebar() {
       active: pathname === "/dashboard",
     },
     {
+      label: "Discovery", 
+      icon: Compass, 
+      href: "/dashboard/discovery",
+      active: pathname === "/dashboard/discovery",
+    },
+    {
       label: "Pastas",
       icon: Folder,
       href: "/dashboard/folders",
@@ -73,7 +80,7 @@ export function Sidebar() {
           href="/dashboard"
           className="flex items-center gap-2 font-semibold md:ml-2"
         >
-          <Link2 className="h-5 w-5 text-primary" />
+          <Link2Icon className="h-5 w-5 text-primary" />
           <span className="hidden md:inline-flex">UseLink</span>
         </Link>
       </div>

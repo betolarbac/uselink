@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  BookmarkPlus,
   Edit,
   ExternalLink,
   Eye,
@@ -28,6 +29,7 @@ import {
   Lock,
   LockOpen,
   Trash2,
+  UserCircle,
 } from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
@@ -44,9 +46,13 @@ import Image from "next/image";
 
 interface LinkTableProps {
   links: Link[];
+  contexto?: "dashboard" | "discovery";
 }
 
-export function LinkTable({ links: dataLinks }: LinkTableProps) {
+export function LinkTable({
+  links: dataLinks,
+  contexto = "dashboard",
+}: LinkTableProps) {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,12 +72,12 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
     setLoading(false);
   }, [dataLinks]);
 
-  const visibleLinks = links.filter((link) => !link.folder?.isSecret);
-
-  const filteredLinks = visibleLinks.filter(
+  const filteredLinks = links.filter(
     (link) =>
       link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       link.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (contexto === "discovery" &&
+        link.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())) || // Busca por autor no discovery
       link.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -129,9 +135,16 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Input
-          placeholder="Buscar links..."
+          placeholder={
+            contexto === "discovery"
+              ? "Buscar links públicos, título, url, autor..."
+              : "Buscar links..."
+          }
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
           className="max-w-sm"
         />
       </div>
@@ -142,22 +155,36 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
             <TableRow>
               <TableHead>Título</TableHead>
               <TableHead className="hidden md:table-cell">URL</TableHead>
+              {contexto === "discovery" && (
+                <TableHead className="hidden lg:table-cell">Autor</TableHead> // Nova coluna para Autor
+              )}
               <TableHead className="hidden md:table-cell">Categoria</TableHead>
-              <TableHead className="hidden md:table-cell">Pasta</TableHead>
-              <TableHead className="hidden md:table-cell">Estado</TableHead>
+              {contexto === "dashboard" && (
+                <TableHead className="hidden md:table-cell">Pasta</TableHead> // Coluna de Pasta apenas no dashboard
+              )}
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell
+                  colSpan={contexto === "discovery" ? 5 : 5}
+                  className="h-24 text-center"
+                >
+                  {" "}
+                  {/* Ajustar colSpan */}
                   Carregando links...
                 </TableCell>
               </TableRow>
             ) : paginatedLinks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell
+                  colSpan={contexto === "discovery" ? 5 : 5}
+                  className="h-24 text-center"
+                >
+                  {" "}
+                  {/* Ajustar colSpan */}
                   Nenhum link encontrado.
                 </TableCell>
               </TableRow>
@@ -193,6 +220,14 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       </HoverCardContent>
                     </HoverCard>
                   </TableCell>
+                  {contexto === "discovery" && (
+                    <TableCell className="hidden lg:table-cell">
+                      <div className="flex items-center gap-1.5">
+                        <UserCircle className="h-4 w-4 text-muted-foreground" />
+                        {link.user?.name || "Desconhecido"}
+                      </div>
+                    </TableCell>
+                  )}
                   <TableCell className="hidden md:table-cell">
                     {link.category && (
                       <Badge
@@ -207,20 +242,26 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                       </Badge>
                     )}
                   </TableCell>
+                  {contexto === "dashboard" && (
+                    <TableCell className="hidden md:table-cell">
+                      {link.folder && link.folder.name}
+                    </TableCell>
+                  )}
                   <TableCell className="hidden md:table-cell">
-                    {link.folder && link.folder.name}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {link.isPublic ? (
-                      <span className="flex w-fit items-center p-1 rounded bg-accent text-accent-foreground">
-                        <LockOpen className="h-4 w-4 mr-2" />
-                        Público
-                      </span>
-                    ) : (
-                      <span className="flex w-fit items-center p-1 rounded bg-[#FF173F2D] text-[#FF6465EB]">
-                        <Lock className="h-4 w-4 mr-2" />
-                        Privado
-                      </span>
+                    {contexto === "dashboard" && (
+                      <>
+                        {link.isPublic ? (
+                          <span className="flex w-fit items-center p-1 rounded bg-accent text-accent-foreground">
+                            <LockOpen className="h-4 w-4 mr-2" />
+                            Público
+                          </span>
+                        ) : (
+                          <span className="flex w-fit items-center p-1 rounded bg-[#FF173F2D] text-[#FF6465EB]">
+                            <Lock className="h-4 w-4 mr-2" />
+                            Privado
+                          </span>
+                        )}
+                      </>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -234,23 +275,39 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                         <Eye className="h-4 w-4" />
                       </Button>
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleEditClick(link)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      {contexto === "dashboard" && ( // Ações de Editar e Deletar apenas no dashboard
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleEditClick(link)}
+                            title="Editar link"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => handleDeleteClick(link.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteClick(link.id)}
+                            title="Excluir link"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                      {contexto === "discovery" && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          title="Salvar este link (futuro)"
+                        >
+                          <BookmarkPlus className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -291,6 +348,7 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
           isOpen={detailsDialogOpen}
           onClose={() => setDetailsDialogOpen(false)}
           links={selectedLink}
+          contexto={contexto}
         />
       )}
 

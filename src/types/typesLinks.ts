@@ -1,3 +1,7 @@
+export type UserInfo = {
+  name: string;
+}
+
 export type Link = {
   id: string;
   title: string;
@@ -8,6 +12,8 @@ export type Link = {
   folder?: { id: string; name: string; isSecret: boolean } | null;
   category?: { id: string; name: string; color: string } | null;
   isPublic: boolean;
+  user?: UserInfo | null;
+  createdAt: Date;
 };
 
 export type Folder = {
