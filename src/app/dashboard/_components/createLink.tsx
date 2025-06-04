@@ -121,7 +121,9 @@ export function CreateLink() {
     try {
       setIsSubmitting(true);
       await createLink(data);
-
+      fetch(`https://api.microlink.io/?url=${data.url}&screenshot=true&embed=screenshot.url"`, {
+        method: "GET",
+      });
       form.reset();
       setOpen(false);
       router.refresh();

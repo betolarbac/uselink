@@ -20,13 +20,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Edit, ExternalLink, Eye, Loader, Lock, LockOpen, Trash2 } from "lucide-react";
+import {
+  Edit,
+  ExternalLink,
+  Eye,
+  Loader,
+  Lock,
+  LockOpen,
+  Trash2,
+} from "lucide-react";
 import { deleteLink } from "../../actions/linksActions";
 import { LinkEdit } from "./linkEdit";
 import { Link } from "@/types/typesLinks";
 import { LinkDetailsModal } from "./LinkDetailsModal";
 import { toast } from "sonner";
 import { FaviconDisplay } from "./FaviconDisplay";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import Image from "next/image";
 
 interface LinkTableProps {
   links: Link[];
@@ -152,20 +166,32 @@ export function LinkTable({ links: dataLinks }: LinkTableProps) {
                 <TableRow key={link.id}>
                   <TableCell className="font-medium">{link.title}</TableCell>
                   <TableCell className="hidden max-w-[200px] truncate md:table-cell">
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-primary hover:underline"
-                    >
-                      <FaviconDisplay
-                        linkUrl={link.url}
-                        size={16}
-                        className="h-4 w-4 flex-shrink-0"
-                      />
-                      <span className="truncate">{link.url}</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-primary hover:underline w-fit"
+                        >
+                          <FaviconDisplay
+                            linkUrl={link.url}
+                            size={16}
+                            className="h-4 w-4 flex-shrink-0"
+                          />
+                          <span className="truncate">{link.url}</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-fit" side="top">
+                        <Image
+                          width="200"
+                          height="125"
+                          alt="hidden image"
+                          src={`https://api.microlink.io/?url=${link.url}&screenshot=true&embed=screenshot.url`}
+                        />
+                      </HoverCardContent>
+                    </HoverCard>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {link.category && (
