@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLinkSchema, CreateLinkType } from "@/lib/validators/link";
@@ -50,6 +50,7 @@ export function CreateLink() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const userInterruptedAIRef = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -100,35 +101,36 @@ export function CreateLink() {
   const {
     completion,
     complete,
+    stop,
     isLoading: isGeneratingDescription,
     error: completionError,
     setCompletion,
   } = useCompletion({
     api: "/api/generate-description",
     onFinish: (_prompt, fullCompletionText) => {
-      form.setValue("description", fullCompletionText, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-      console.log("Geração de descrição finalizada.");
+      if(!userInterruptedAIRef.current) {
+        form.setValue("description", fullCompletionText, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        console.log("Geração de descrição finalizada.");
+      }
+
+      userInterruptedAIRef.current = false;
     },
     onError: (err) => {
       console.error("Erro ao gerar descrição com IA:", err);
       toast.error("Erro na IA", {description: `Não foi possível gerar a descrição: ${err.message}`})
+      userInterruptedAIRef.current = false;
     },
   });
 
   useEffect(() => {
-    if (
-      isGeneratingDescription ||
-      completion !== form.getValues("description")
-    ) {
-      form.setValue("description", completion, {
-        shouldDirty: true,
-        shouldValidate: false,
-      });
+    if (!open && isGeneratingDescription) {
+      stop();
+      userInterruptedAIRef.current = false;
     }
-  }, [completion, form, isGeneratingDescription]);
+  }, [open, isGeneratingDescription, stop]);
 
   async function handleGenerateDescriptionClick() {
     const urlValue = form.getValues("url");
@@ -138,6 +140,7 @@ export function CreateLink() {
       alert("Por favor, insira uma URL válida para gerar a descrição.");
       return;
     }
+    userInterruptedAIRef.current = false;
     form.setValue("description", "");
     setCompletion("");
     complete("", {
@@ -220,7 +223,7 @@ export function CreateLink() {
                       disabled={isGeneratingDescription}
                       placeholder="Descrição do link"
                       {...field}
-                      value={field.value || ""}
+                      value={isGeneratingDescription && !userInterruptedAIRef.current ? completion : field.value}
                     />
                   </FormControl>
                   <Button
@@ -231,10 +234,13 @@ export function CreateLink() {
                     className="px-2 py-1"
                   >
                     {isGeneratingDescription ? (
-                      "Gerando..."
+                     <>
+                      <Loader className="h-4 w-4 mr-2 animate-spin"/>
+                      Gerando...
+                     </>
                     ) : (
                       <>
-                        <Sparkles className="h-3 w-3 mr-1" />
+                        <Sparkles className="h-4 w-4 mr-2" />
                         Gerar com IA
                       </>
                     )}
@@ -312,7 +318,7 @@ export function CreateLink() {
             <DialogFooter>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isGeneratingDescription}
                 className="dark:text-white"
               >
                 {isSubmitting ? (
