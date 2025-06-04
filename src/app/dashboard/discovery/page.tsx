@@ -1,6 +1,5 @@
 import { ExternalLink } from "lucide-react";
 import { LinkTable } from "../_components/links/link-table";
-export const dynamic = 'force-dynamic';
 import { getPublicLinks } from "../actions/linksActions";
 
 export default async function DiscoveryPage() {
