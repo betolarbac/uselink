@@ -5,7 +5,8 @@ import CategoriesCard from "./_components/categoriesCard";
 import { getCategories } from "./actions/categoriesActions";
 
 export default async function CategoriesPage() {
-  const categories = await getCategories();
+  const categoriesData = await getCategories();
+  const categories = categoriesData || [];
 
   return (
     <div className="space-y-6">
@@ -34,13 +35,13 @@ export default async function CategoriesPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {categories.map((categories) => (
+          {categories.map((category) => (
             <CategoriesCard
-              id={categories.id}
-              key={categories.id}
-              name={categories.name}
-              color={categories.color}
-              linksCount={categories.links.length}
+              id={category.id}
+              key={category.id}
+              name={category.name}
+              color={category.color}
+              linksCount={category.links.length}
             />
           ))}
         </div>

@@ -17,7 +17,6 @@ export async function getCategories() {
       links: {
         select: {
           id: true,
-          title: true,
         },
       },
     },

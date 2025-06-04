@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
+import { Loader, Trash2 } from "lucide-react";
 import { useTransition } from "react";
 import { deleteCategory } from "../actions/categoriesActions";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ interface CategoriasCardProps {
   id: string;
   name: string;
   color: string;
-  linksCount: number | string;
+  linksCount: number;
 }
 
 export default function CategoriesCard(dataCategory: CategoriasCardProps) {
@@ -39,11 +39,11 @@ export default function CategoriesCard(dataCategory: CategoriasCardProps) {
   };
 
   return (
-    <Card className="max-w-80" style={{ borderColor: dataCategory.color }}>
+    <Card className="max-w-xs w-ful" style={{ borderColor: dataCategory.color }}>
       <CardHeader className="pb-2 px-0">
         <div className="flex items-center justify-between px-6">
           <div className="flex items-center gap-2">
-            <CardTitle className="text-base">{dataCategory.name}</CardTitle>
+            <CardTitle className="text-base font-medium">{dataCategory.name}</CardTitle>
           </div>
           <Button
             variant="ghost"
@@ -52,18 +52,18 @@ export default function CategoriesCard(dataCategory: CategoriasCardProps) {
             onClick={handleDeleteCategory}
             disabled={isPending}
           >
-            <Trash2 />
+            {isPending ? <Loader className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
           </Button>
         </div>
         <div
-          className="h-1 w-full"
+          className="h-1 w-full mt-1"
           style={{ backgroundColor: dataCategory.color }}
         />
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-2">
         <CardDescription>
-          <Badge variant="outline" className="bg-muted">
-            0 links
+          <Badge variant="outline" className="bg-muted font-normal">
+          {dataCategory.linksCount} {dataCategory.linksCount === 1 ? "link" : "links"}
           </Badge>
         </CardDescription>
       </CardContent>
