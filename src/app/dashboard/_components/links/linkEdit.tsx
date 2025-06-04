@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLinkSchema, CreateLinkType } from "@/lib/validators/link";
 import { updateLink } from "../../actions/linksActions";
-import { getFolders } from "../../folders/actions/folderActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,10 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Folder, Link } from "@/types/typesLinks";
+import { Link } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
-import { getCategories } from "../../categories/actions/categoriesActions";
 import { toast } from "sonner";
+import { useFolders } from "@/hooks/useFolders";
+import { useCategories } from "@/hooks/useCategories";
 
 interface LinkEditProps {
   link: Link;
@@ -45,16 +45,10 @@ interface LinkEditProps {
   onLinkUpdated: (updatedLink: Link) => void;
 }
 
-type CategoriesType = {
-  name: string;
-  id: string;
-};
-
 export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [categories, setCategories] = useState<CategoriesType[]>([])
-
+  const {folders, isLoadingFolders, foldersError} = useFolders(open);
+  const {categories, isLoadingCategories, categoriesError} = useCategories(open)
   const router = useRouter();
 
   const form = useForm<CreateLinkType>({
@@ -82,31 +76,6 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
     });
   }, [link, form]);
 
-  useEffect(() => {
-    async function loadFolders() {
-      try {
-        const folderData = await getFolders();
-        setFolders(folderData);
-      } catch (error) {
-        console.error("Erro ao carregar pastas:", error);
-      }
-    }
-
-  async function loadCategories() {
-    try {
-      const categoriesData = await getCategories();
-
-      setCategories(categoriesData);
-    } catch (error) {
-      console.error("Erro ao carregar categorias:", error);
-    }
-  }
-
-    if (open) {
-      loadFolders();
-      loadCategories();
-    }
-  }, [open]);
 
   async function onSubmit(data: CreateLinkType) {
     try {
@@ -197,6 +166,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     value={field.value}
+                    disabled={isLoadingFolders}
                   >
                     <FormControl className="w-full">
                       <SelectTrigger>
@@ -204,7 +174,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="none">Sem pasta</SelectItem>
+                      <SelectItem value="none" disabled>Sem pasta</SelectItem>
                       {folders.map((folder) => (
                         <SelectItem key={folder.id} value={folder.id}>
                           {folder.name} {folder.isSecret ? "🔒" : ""}
@@ -212,6 +182,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                       ))}
                     </SelectContent>
                   </Select>
+                  {foldersError && <p className="text-sm text-destructive mt-1">Erro ao carregar pastas.</p>}
                   <FormMessage />
                 </FormItem>
               )}
@@ -226,6 +197,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={isLoadingCategories}
                     >
                       <FormControl className="w-full">
                         <SelectTrigger>
@@ -233,7 +205,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
                         {categories.map((categoria) => (
                           <SelectItem key={categoria.id} value={categoria.id}>
                             {categoria.name}
@@ -241,6 +213,7 @@ export function LinkEdit({ link, open, onOpenChange, onLinkUpdated }: LinkEditPr
                         ))}
                       </SelectContent>
                     </Select>
+                    {categoriesError && <p className="text-sm text-destructive mt-1">Erro ao carregar categorias.</p>}
                     <FormMessage />
                   </FormItem>
                 )}

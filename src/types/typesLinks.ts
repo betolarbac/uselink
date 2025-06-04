@@ -14,3 +14,9 @@ export type Folder = {
   name: string;
   isSecret: boolean;
 };
+
+export type Category = {
+  id: string;
+  name: string;
+  color: string; 
+};

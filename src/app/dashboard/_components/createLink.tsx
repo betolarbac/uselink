@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLinkSchema, CreateLinkType } from "@/lib/validators/link";
 import { createLink } from "../actions/linksActions";
-import { getFolders } from "../folders/actions/folderActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,54 +33,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Folder } from "@/types/typesLinks";
 import { useRouter } from "next/navigation";
-import { getCategories } from "../categories/actions/categoriesActions";
 import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
-
-type CategoriesType = {
-  name: string;
-  id: string;
-};
+import { useFolders } from "@/hooks/useFolders";
+import { useCategories } from "@/hooks/useCategories";
 
 export function CreateLink() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [categories, setCategories] = useState<CategoriesType[]>([]);
   const userInterruptedAIRef = useRef(false);
   const router = useRouter();
+  const {folders, isLoadingFolders, foldersError} = useFolders(open);
+  const {categories, isLoadingCategories, categoriesError} = useCategories(open)
 
-  useEffect(() => {
-    async function loadFolders() {
-      try {
-        const folderData = await getFolders();
-        setFolders(folderData);
-      } catch (error) {
-        console.error("Erro ao carregar pastas:", error);
-      }
-    }
-
-    if (open) {
-      loadFolders();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const categoriesData = await getCategories();
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
-      }
-    }
-
-    if (open) {
-      loadCategories();
-    }
-  }, [open]);
 
   const form = useForm<CreateLinkType>({
     resolver: zodResolver(createLinkSchema),
@@ -265,6 +230,7 @@ export function CreateLink() {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={isLoadingFolders}
                     >
                       <FormControl className="w-full">
                         <SelectTrigger>
@@ -272,7 +238,7 @@ export function CreateLink() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
                         {folders.map((folder) => (
                           <SelectItem key={folder.id} value={folder.id}>
                             {folder.name} {folder.isSecret ? "🔒" : ""}
@@ -280,6 +246,7 @@ export function CreateLink() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {foldersError && <p className="text-sm text-destructive mt-1">Erro ao carregar pastas.</p>}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -294,6 +261,7 @@ export function CreateLink() {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={isLoadingCategories}
                     >
                       <FormControl className="w-full">
                         <SelectTrigger>
@@ -301,7 +269,7 @@ export function CreateLink() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">Sem pasta</SelectItem>
+                        <SelectItem value="none" disabled>Sem pasta</SelectItem>
                         {categories.map((categoria) => (
                           <SelectItem key={categoria.id} value={categoria.id}>
                             {categoria.name}
@@ -309,6 +277,7 @@ export function CreateLink() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {categoriesError && <p className="text-sm text-destructive mt-1">Erro ao carregar categorias.</p>}
                     <FormMessage />
                   </FormItem>
                 )}
