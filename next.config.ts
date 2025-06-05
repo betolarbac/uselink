@@ -7,9 +7,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.google.com',
       },
-    ],
-    domains: [
-      "api.microlink.io", // Microlink Image Preview
+      {
+        protocol: 'https',
+        hostname: "api.microlink.io",
+      },
     ],
   },
 };
