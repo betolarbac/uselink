@@ -11,6 +11,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"; // Componentes de paginação do Shadcn
 import { parseAsInteger, createLoader } from 'nuqs/server';
+import type { SearchParams } from 'nuqs/server'
 
 const discoverySearchParamsParsers = {
   page: parseAsInteger.withDefault(1),
@@ -44,11 +45,11 @@ const generatePageNumbers = (currentPage: number, totalPages: number, delta: num
   return rangeWithDots;
 };
 
-export default async function DiscoveryPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; q?: string; };
-}) {
+type PageProps = {
+  searchParams: Promise<SearchParams>
+}
+
+export default async function DiscoveryPage({ searchParams }: PageProps) {
   const { page: currentPageFromUrl } = await loadDiscoveryParams(searchParams ?? {});
 
   const {

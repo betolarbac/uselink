@@ -1,12 +1,23 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LinkTable } from "./_components/links/link-table";
 import { CreateLink } from "./_components/createLink";
 import LinksData from "./_components/links/linksData";
 import { CreditCard, Link2 } from "lucide-react";
 import { getLinks } from "./actions/linksActions";
+import { parseAsInteger, createLoader } from 'nuqs/server';
+import type { SearchParams } from 'nuqs/server'
 
-export default async function DashboardPage() {
-  const dataLinkTable = await getLinks();
+const dashboardSearchParamsParsers = {
+  page: parseAsInteger.withDefault(1),
+  // q: parseAsString.withDefault(''), // Para busca server-side no futuro
+};
+const loadDashboardParams = createLoader(dashboardSearchParamsParsers);
+type PageProps = {
+  searchParams: Promise<SearchParams>
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  const { page: currentPage } = await loadDashboardParams(searchParams ?? {});
+  const paginatedLinkData = await getLinks({ page: currentPage, limit: 10 });
 
 
   return (
@@ -40,10 +51,15 @@ export default async function DashboardPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="links" className="space-y-4">
-          <LinkTable links={dataLinkTable} />
+        <LinksData
+        initialLinks={paginatedLinkData.links}
+        totalPages={paginatedLinkData.totalPages}
+        currentPage={paginatedLinkData.currentPage}
+        totalCount={paginatedLinkData.totalCount}
+      />
         </TabsContent>
         <TabsContent value="overview" className="space-y-4">
-          <LinksData />
+         
         </TabsContent>
       </Tabs>
     </div>

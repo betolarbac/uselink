@@ -1,107 +1,105 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Folder, Link2, Pen, Tag, Trash } from "lucide-react";
-import { getLinks } from "../../actions/linksActions";
-import { getFolders } from "../../folders/actions/folderActions";
-import { getCategories } from "../../categories/actions/categoriesActions";
+"use client";
 
-export default async function LinksData() {
-  const [data, folders, categories] = await Promise.all([
-    getLinks(),
-    getFolders(),
-    getCategories()
-  ]);
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Link as LinkType } from "@/types/typesLinks";
+import { LinkTable } from "./link-table";
+
+interface LinksDataProps {
+  initialLinks: LinkType[];
+  totalPages: number;
+  currentPage: number;
+  totalCount: number;
+}
+
+const generatePageNumbers = (currentPage: number, totalPages: number, delta: number = 2) => {
+  const left = currentPage - delta;
+  const right = currentPage + delta + 1;
+  const range = [];
+  const rangeWithDots: (number | string)[] = [];
+  let l: number | undefined;
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= left && i < right)) {
+      range.push(i);
+    }
+  }
+  for (const i of range) {
+    if (l) {
+      if (i - l === 2) { rangeWithDots.push(l + 1); }
+      else if (i - l !== 1) { rangeWithDots.push('...'); }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+  return rangeWithDots;
+};
+
+export default function LinksData({
+  initialLinks,
+  totalPages,
+  currentPage,
+  totalCount,
+}: LinksDataProps) {
+  const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
   return (
-    <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="gap-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Links
-            </CardTitle>
-            <Link2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="gap-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pastas</CardTitle>
-            <Folder className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{folders.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="gap-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categorias</CardTitle>
-            <Tag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{categories.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Usado em {data.filter(link => link.categoryId).length} links
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold leading-none tracking-tight">
-              Links Recentes
-            </CardTitle>
-            <CardDescription>
-              Seus links adicionados recentemente
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {data
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice(0, 5)
-                .map((link) => (
-                  <div key={link.id} className="flex items-center gap-4">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                      <Link2 className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {link.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {link.url}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <span className="sr-only">Editar</span>
-                        <Pen />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <span className="sr-only">Excluir</span>
-                        <Trash />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+    <div className="space-y-4">
+      <LinkTable
+        links={initialLinks}
+        contexto="dashboard"
+        showInternalPagination={false} // Desabilita paginação interna da tabela
+      />
+
+      {totalPages > 1 && (
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href={currentPage > 1 ? `/dashboard?page=${currentPage - 1}` : undefined}
+                aria-disabled={currentPage <= 1}
+                tabIndex={currentPage <= 1 ? -1 : undefined}
+                className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
+              />
+            </PaginationItem>
+            {pageNumbers.map((pageNumber, index) => (
+              <PaginationItem key={index}>
+                {pageNumber === '...' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    href={`/dashboard?page=${pageNumber}`}
+                    isActive={currentPage === pageNumber}
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href={currentPage < totalPages ? `/dashboard?page=${currentPage + 1}` : undefined}
+                aria-disabled={currentPage >= totalPages}
+                tabIndex={currentPage >= totalPages ? -1 : undefined}
+                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+       { totalCount > 0 && (
+          <p className="text-center text-sm text-muted-foreground mt-1">
+            Página {currentPage} de {totalPages}. (Total de {totalCount} links)
+          </p>
+        )
+      }
+    </div>
   );
 }

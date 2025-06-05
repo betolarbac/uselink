@@ -4,6 +4,20 @@ import { getCurrentUser } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma";
 import { createLinkSchema } from "@/lib/validators/link";
 import type { Link as LinkType } from '@/types/typesLinks';
+import { Prisma } from "@prisma/client";
+
+interface GetLinksOptions {
+  page?: number;
+  limit?: number;
+  folderId?: string; 
+}
+
+interface GetLinksResult {
+  links: LinkType[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
 
 export async function createLink(input: unknown) {
   const data = createLinkSchema.parse(input);
@@ -22,21 +36,60 @@ export async function createLink(input: unknown) {
   });
 }
 
-export async function getLinks() {
+export async function getLinks(options: GetLinksOptions = {}): Promise<GetLinksResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { links: [], totalCount: 0, totalPages: 1, currentPage: 1 };
+  }
 
-  return await prisma.link.findMany({
-    where: {
-      userId: user?.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      folder: true,
-      category: true,
-    },
-  });
+  const { page = 1, limit = 10, folderId } = options;
+
+  const whereClause: Prisma.LinkWhereInput = {
+    userId: user.id,
+  };
+
+  if (folderId) {
+    whereClause.folderId = folderId;
+  }
+  
+
+  try {
+    const totalCount = await prisma.link.count({ where: whereClause });
+    const linksData = await prisma.link.findMany({
+      where: whereClause,
+      include: {
+        folder: true,
+        category: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const formattedLinks = linksData.map(link => ({
+      ...link,
+      description: link.description ?? null,
+      folderId: link.folderId ?? null,
+      categoryId: link.categoryId ?? null,
+      folder: link.folder ? { id: link.folder.id, name: link.folder.name, isSecret: link.folder.isSecret } : null,
+      category: link.category ? { id: link.category.id, name: link.category.name, color: link.category.color } : null,
+      isPublic: link.isPublic ?? false,
+      createdAt: link.createdAt,
+    })) as LinkType[];
+
+
+    return {
+      links: formattedLinks,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error(`Erro ao buscar links para o usuário ${user.id}:`, error);
+    return { links: [], totalCount: 0, totalPages: 1, currentPage: 1 };
+  }
 }
 
 export async function getLinksByFolderId(folderId: string) {
