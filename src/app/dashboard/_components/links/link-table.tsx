@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,11 +47,13 @@ import Image from "next/image";
 interface LinkTableProps {
   links: Link[];
   contexto?: "dashboard" | "discovery";
+  showInternalPagination?: boolean;
 }
 
 export function LinkTable({
   links: dataLinks,
   contexto = "dashboard",
+  showInternalPagination = true,
 }: LinkTableProps) {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,11 +84,15 @@ export function LinkTable({
   );
 
   const totalPages = Math.ceil(filteredLinks.length / linksPerPage);
-  const startIndex = (currentPage - 1) * linksPerPage;
-  const paginatedLinks = filteredLinks.slice(
-    startIndex,
-    startIndex + linksPerPage
-  );
+
+  const paginatedLinks = useMemo(() => {
+    if (!showInternalPagination) {
+      return filteredLinks; 
+    }
+    // ... resto da lógica de paginação interna
+    const startIndex = (currentPage - 1) * linksPerPage;
+    return filteredLinks.slice(startIndex, startIndex + linksPerPage);
+  }, [filteredLinks, currentPage, linksPerPage, showInternalPagination]);
 
   const handleDeleteClick = (id: string) => {
     setLinkToDelete(id);
@@ -143,7 +149,9 @@ export function LinkTable({
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1);
+            if (showInternalPagination) { 
+              setCurrentPage(1); 
+            }
           }}
           className="max-w-sm"
         />
