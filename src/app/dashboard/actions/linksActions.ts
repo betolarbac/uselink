@@ -3,13 +3,13 @@
 import { getCurrentUser } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma";
 import { createLinkSchema } from "@/lib/validators/link";
-import type { Link as LinkType } from '@/types/typesLinks';
+import type { Link as LinkType } from "@/types/typesLinks";
 import { Prisma } from "@prisma/client";
 
 interface GetLinksOptions {
   page?: number;
   limit?: number;
-  folderId?: string; 
+  folderId?: string;
 }
 
 interface GetLinksResult {
@@ -36,7 +36,9 @@ export async function createLink(input: unknown) {
   });
 }
 
-export async function getLinks(options: GetLinksOptions = {}): Promise<GetLinksResult> {
+export async function getLinks(
+  options: GetLinksOptions = {}
+): Promise<GetLinksResult> {
   const user = await getCurrentUser();
   if (!user) {
     return { links: [], totalCount: 0, totalPages: 1, currentPage: 1 };
@@ -51,7 +53,6 @@ export async function getLinks(options: GetLinksOptions = {}): Promise<GetLinksR
   if (folderId) {
     whereClause.folderId = folderId;
   }
-  
 
   try {
     const totalCount = await prisma.link.count({ where: whereClause });
@@ -68,17 +69,28 @@ export async function getLinks(options: GetLinksOptions = {}): Promise<GetLinksR
       take: limit,
     });
 
-    const formattedLinks = linksData.map(link => ({
+    const formattedLinks = linksData.map((link) => ({
       ...link,
       description: link.description ?? null,
       folderId: link.folderId ?? null,
       categoryId: link.categoryId ?? null,
-      folder: link.folder ? { id: link.folder.id, name: link.folder.name, isSecret: link.folder.isSecret } : null,
-      category: link.category ? { id: link.category.id, name: link.category.name, color: link.category.color } : null,
+      folder: link.folder
+        ? {
+            id: link.folder.id,
+            name: link.folder.name,
+            isSecret: link.folder.isSecret,
+          }
+        : null,
+      category: link.category
+        ? {
+            id: link.category.id,
+            name: link.category.name,
+            color: link.category.color,
+          }
+        : null,
       isPublic: link.isPublic ?? false,
       createdAt: link.createdAt,
     })) as LinkType[];
-
 
     return {
       links: formattedLinks,
@@ -94,11 +106,22 @@ export async function getLinks(options: GetLinksOptions = {}): Promise<GetLinksR
 
 export async function getLinksByFolderId(folderId: string) {
   const user = await getCurrentUser();
+  if (!user) return [];
+
+  const folderAcess = await prisma.folder.findFirst({
+    where: {
+      id: folderId,
+      OR: [{ userId: user.id }, { sharedWith: { some: { userId: user.id } } }],
+    },
+  });
+
+  if (!folderAcess) {
+    return [];
+  }
 
   return await prisma.link.findMany({
     where: {
-      userId: user?.id,
-      folderId,
+      folderId: folderId,
     },
     orderBy: {
       createdAt: "desc",
@@ -119,7 +142,7 @@ export async function updateLink(id: string, input: unknown) {
     folderId: data.folderId?.trim() || undefined,
     categoryId: data.categoryId?.trim() || undefined,
     customSlug: data.customSlug?.trim() || undefined,
-  }
+  };
 
   return await prisma.link.updateMany({
     where: {
@@ -127,7 +150,7 @@ export async function updateLink(id: string, input: unknown) {
       userId: user?.id,
     },
     data: cleanData,
-  })
+  });
 }
 
 export async function deleteLink(id: string) {
@@ -156,7 +179,7 @@ interface GetPublicLinksResult {
 export async function getPublicLinks(
   options: GetPublicLinksOptions = {}
 ): Promise<GetPublicLinksResult> {
-  const { page = 1, limit = 10 } = options; 
+  const { page = 1, limit = 10 } = options;
 
   try {
     const whereClause = {
@@ -167,9 +190,9 @@ export async function getPublicLinks(
     const linksData = await prisma.link.findMany({
       where: whereClause,
       include: {
-        user: { 
+        user: {
           select: {
-            id: true, 
+            id: true,
             name: true,
           },
         },
@@ -187,17 +210,17 @@ export async function getPublicLinks(
       take: limit,
     });
 
-    
-    const formattedLinks = linksData.map(link => ({
+    const formattedLinks = linksData.map((link) => ({
       ...link,
       description: link.description ?? null,
       folderId: link.folderId ?? null,
       categoryId: link.categoryId ?? null,
-      folder: link.folderId ? { id: link.folderId, name: '', isSecret: false } : null,
-      user: link.user ? { name: link.user.name } : null, 
-      createdAt: link.createdAt, 
+      folder: link.folderId
+        ? { id: link.folderId, name: "", isSecret: false }
+        : null,
+      user: link.user ? { name: link.user.name } : null,
+      createdAt: link.createdAt,
     })) as LinkType[];
-
 
     return {
       links: formattedLinks,
