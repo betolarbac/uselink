@@ -20,7 +20,6 @@ interface FolderShareDialogProps {
   ownerInfo: { name: string | null; email: string | null; } | null;
 }
 
-// Tipos para os estados
 type FoundUser = { id: string; name: string | null; email: string | null; } | null;
 type SharedUser = { id: string; user: { id: string; name: string | null; email: string | null; }; };
 
@@ -33,7 +32,6 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
   const [isSearching, startSearchTransition] = useTransition();
   const [isInviting, startInviteTransition] = useTransition();
 
-  // Função para buscar e atualizar a lista de usuários compartilhados
   const fetchSharedUsers = async () => {
     try {
       const users = await getSharedUsersForFolder(folderId);
@@ -47,7 +45,7 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
 
   useEffect(() => {
     fetchSharedUsers();
-  }, [folderId]); // Roda quando o folderId estiver disponível
+  }, [folderId]); 
 
   const handleSearchUser = () => {
     if (!emailToSearch.trim()) return;
@@ -68,9 +66,9 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
       try {
         await shareFolderWithUser(folderId, foundUser.id);
         //toast({ title: "Sucesso!", description: `${foundUser.name} foi convidado para a pasta.` });
-        setFoundUser(null); // Limpa o usuário encontrado
-        setEmailToSearch(""); // Limpa o input
-        await fetchSharedUsers(); // Atualiza a lista
+        setFoundUser(null); 
+        setEmailToSearch(""); 
+        await fetchSharedUsers(); 
       } catch (error) {
         console.log("Erro ao convidar usuário:", error);
         //toast({ variant: "destructive", title: "Erro ao convidar", description: error.message || "Não foi possível adicionar o usuário." });
@@ -83,7 +81,7 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
     try {
       await removeFolderAccess(accessId);
       //toast({ title: "Acesso removido", description: `O acesso de ${userName} foi removido.` });
-      await fetchSharedUsers(); // Atualiza a lista
+      await fetchSharedUsers(); 
     } catch (error) {
       console.log("Erro ao remover acesso:", error);
       // toast({ variant: "destructive", title: "Erro ao remover acesso", description: error.message });
@@ -155,7 +153,7 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
               </div>
             )}
 
-            {/* Usuários com acesso */}
+           
             {sharedUsers.map(shared => (
               <div key={shared.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
