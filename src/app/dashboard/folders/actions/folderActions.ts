@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { getCurrentUser } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma";
@@ -7,7 +7,7 @@ import type { Prisma } from "@prisma/client";
 export async function getFolders(searchTerm?: string) {
   const user = await getCurrentUser();
   if (!user?.id) {
-    return []; 
+    return [];
   }
 
   const whereClause: Prisma.FolderWhereInput = {
@@ -19,19 +19,19 @@ export async function getFolders(searchTerm?: string) {
         sharedWith: {
           some: {
             userId: user.id,
-          }
-        }
-      }
-    ]
-  }
+          },
+        },
+      },
+    ],
+  };
 
   if (searchTerm && searchTerm.trim() !== "") {
-   whereClause.AND = {
-    name: {
-      contains: searchTerm.trim(),
-      mode: "insensitive",
-    }
-   }
+    whereClause.AND = {
+      name: {
+        contains: searchTerm.trim(),
+        mode: "insensitive",
+      },
+    };
   }
 
   return await prisma.folder.findMany({
@@ -45,18 +45,18 @@ export async function getFolders(searchTerm?: string) {
         select: {
           name: true,
           email: true,
-        }
+        },
       },
       links: {
         select: {
           id: true,
           title: true,
-        }
-      }
+        },
+      },
     },
     orderBy: {
-      name: "asc"
-    }
+      name: "asc",
+    },
   });
 }
 
@@ -83,18 +83,28 @@ export async function deleteFolder(id: string) {
   });
 }
 
-export async function getFolderName(id: string) {
-  const User = await getCurrentUser();
+export async function getFolderDetails(id: string) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) return null;
 
-  return await prisma.folder.findFirst({
+  const folder = await prisma.folder.findFirst({
     where: {
-      id,
-      userId: User?.id,
+      id: id,
+      OR: [
+        { userId: currentUser.id },
+        { sharedWith: { some: { userId: currentUser.id } } },
+      ],
     },
     select: {
+      id: true,
       name: true,
-    }
+      user: {
+        select: { name: true },
+      },
+    },
   });
+
+  return folder;
 }
 
 export async function findUserByEmail(email: string) {
@@ -144,7 +154,10 @@ export async function getSharedUsersForFolder(folderId: string) {
   });
 }
 
-export async function shareFolderWithUser(folderId: string, targetUserId: string) {
+export async function shareFolderWithUser(
+  folderId: string,
+  targetUserId: string
+) {
   const currentUser = await getCurrentUser();
   if (!currentUser) throw new Error("Não autenticado.");
 
@@ -156,7 +169,7 @@ export async function shareFolderWithUser(folderId: string, targetUserId: string
   if (folder?.userId !== currentUser.id) {
     throw new Error("Permissão negada para compartilhar esta pasta.");
   }
-  
+
   if (currentUser.id === targetUserId) {
     throw new Error("Você não pode compartilhar uma pasta com você mesmo.");
   }
