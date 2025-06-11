@@ -48,12 +48,14 @@ interface LinkTableProps {
   links: Link[];
   contexto?: "dashboard" | "discovery";
   showInternalPagination?: boolean;
+  canManage?: boolean;
 }
 
 export function LinkTable({
   links: dataLinks,
   contexto = "dashboard",
   showInternalPagination = true,
+  canManage = true,
 }: LinkTableProps) {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
@@ -281,7 +283,7 @@ export function LinkTable({
                         <Eye className="h-4 w-4" />
                       </Button>
 
-                      {contexto === "dashboard" && (
+                      {contexto === "dashboard" && canManage && (
                         <>
                           <Button
                             variant="ghost"

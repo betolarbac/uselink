@@ -127,17 +127,26 @@ export default function FolderCard(dataFolder: FolderCardProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                    <Edit className="h-4 w-4" /> Editar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
-                    onClick={handleDeleteFolder}
-                    disabled={isPending}
-                  >
-                    <Trash className="h-4 w-4" />{" "}
-                    {isPending ? "Excluindo..." : "Excluir"}
-                  </DropdownMenuItem>
+                  {isOwner && (
+                    <>
+                      <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                        <Edit className="h-4 w-4" /> Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                        onClick={handleDeleteFolder}
+                        disabled={isPending}
+                      >
+                        <Trash className="h-4 w-4" />{" "}
+                        {isPending ? "Excluindo..." : "Excluir"}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {!isOwner && (
+                    <DropdownMenuItem disabled>
+                      Apenas visualização
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

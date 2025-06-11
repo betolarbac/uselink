@@ -63,7 +63,7 @@ export default async function FolderIdPage(props: { params: tParams }) {
       </div>
 
       {links && links.length > 0 ? (
-        <LinkTable links={links} />
+        <LinkTable links={links} canManage={isOwner} />
       ) : (
         <div className="rounded-md border">
           <Table>
