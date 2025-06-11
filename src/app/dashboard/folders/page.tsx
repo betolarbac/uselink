@@ -4,6 +4,7 @@ import { getFolders } from "./actions/folderActions";
 import FolderSearchInput from "./_components/folderSearchInput";
 import { loadSearchParams } from "./search-params";
 import type { SearchParams } from 'nuqs/server'
+import { getCurrentUser } from "@/lib/auth/auth";
 
 type PageProps = {
   searchParams: Promise<SearchParams>
@@ -11,7 +12,12 @@ type PageProps = {
 export default async function FoldersPage({ searchParams }: PageProps) {
   const { q: searchTerm } = await loadSearchParams(searchParams ?? {});
 
-  const folders = await getFolders(searchTerm);
+  const [folders, currentUser] = await Promise.all([
+    getFolders(searchTerm),
+    getCurrentUser()
+  ])
+
+  const currentUserId = currentUser?.id;
   return (
     <div className="flex-1">
       <div>
@@ -42,7 +48,10 @@ export default async function FoldersPage({ searchParams }: PageProps) {
                 id={folder.id}
                 key={folder.id}
                 name={folder.name}
-                subfoldersCount={""} // Este valor não parece estar sendo populado/utilizado
+                ownerId={folder.userId}
+                ownerInfo={folder.user}
+                currentUserId={currentUserId}
+                subfoldersCount={""} 
                 isSecret={folder.isSecret}
                 linksCount={folder.links.length}
               />
