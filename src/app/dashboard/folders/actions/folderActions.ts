@@ -19,6 +19,7 @@ export async function getFolders(searchTerm?: string) {
         sharedWith: {
           some: {
             userId: user.id,
+            status: "ACCEPTED",
           },
         },
       },
@@ -92,7 +93,7 @@ export async function getFolderDetails(id: string) {
       id: id,
       OR: [
         { userId: currentUser.id },
-        { sharedWith: { some: { userId: currentUser.id } } },
+        { sharedWith: { some: { userId: currentUser.id, status: "ACCEPTED" } } },
       ],
     },
     select: {
@@ -154,12 +155,9 @@ export async function getSharedUsersForFolder(folderId: string) {
   });
 }
 
-export async function shareFolderWithUser(
-  folderId: string,
-  targetUserId: string
-) {
+export async function inviteUserToFolder(folderId: string, targetUserId: string) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) throw new Error("Não autenticado.");
+  if (!currentUser?.id) throw new Error("Não autenticado.");
 
   const folder = await prisma.folder.findUnique({
     where: { id: folderId },
@@ -167,21 +165,21 @@ export async function shareFolderWithUser(
   });
 
   if (folder?.userId !== currentUser.id) {
-    throw new Error("Permissão negada para compartilhar esta pasta.");
+    throw new Error("Permissão negada para convidar para esta pasta.");
   }
-
+  
   if (currentUser.id === targetUserId) {
-    throw new Error("Você não pode compartilhar uma pasta com você mesmo.");
+    throw new Error("Você não pode convidar você mesmo.");
   }
 
-  const newAccess = await prisma.folderAccess.create({
+  const newInvitation = await prisma.folderAccess.create({
     data: {
       folderId: folderId,
       userId: targetUserId,
     },
   });
 
-  return newAccess;
+  return newInvitation;
 }
 
 export async function removeFolderAccess(accessId: string) {
@@ -203,5 +201,54 @@ export async function removeFolderAccess(accessId: string) {
 
   return await prisma.folderAccess.delete({
     where: { id: accessId },
+  });
+}
+
+export async function getPendingInvitations() {
+  const currentUser = await getCurrentUser();
+  if (!currentUser?.id) return [];
+
+  return await prisma.folderAccess.findMany({
+    where: {
+      userId: currentUser.id,
+      status: 'PENDING',
+    },
+    include: {
+      folder: { 
+        select: {
+          name: true,
+          user: { 
+            select: { name: true }
+          }
+        }
+      }
+    }
+  });
+}
+
+export async function acceptInvitation(accessId: string) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser?.id) throw new Error("Não autenticado.");
+
+  return await prisma.folderAccess.update({
+    where: {
+      id: accessId,
+      userId: currentUser.id,
+    },
+    data: {
+      status: 'ACCEPTED',
+    }
+  });
+}
+
+export async function declineInvitation(accessId: string) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser?.id) throw new Error("Não autenticado.");
+
+  return await prisma.folderAccess.delete({
+    where: {
+      id: accessId,
+      userId: currentUser.id,
+    },
   });
 }
