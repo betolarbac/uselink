@@ -1,5 +1,5 @@
 "use client";
-import { Edit, Trash, FolderLock, Folder, Users, UserPlus } from "lucide-react";
+import { Edit, Trash, Users, UserPlus, FolderClosed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,31 +52,22 @@ export default function FolderCard(dataFolder: FolderCardProps) {
 
   return (
     <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
-      <div className="group bg-card border border-border rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer">
+      <div className="group bg-card border border-border rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer w-fit">
         <div className="flex items-start justify-between">
           <Link
             href={`/dashboard/folders/${dataFolder.id}`}
-            className="flex-1 p-4"
+            className=" p-4"
           >
-            <div className="flex gap-3 items-center">
-              <div className={`p-2.5 rounded-md`}>
+            <div className="flex gap-3 items-center flex-col">
                 <div className="relative">
-                  {dataFolder.isSecret ? (
-                    <>
-                      <FolderLock className="h-5 w-5 text-amber-500" />
-                    </>
-                  ) : (
-                    <Folder className="h-5 w-5 text-muted-foreground" />
-                  )}
+                    <FolderClosed className="w-28 h-28 stroke-1" />
 
                   {!isOwner && (
-                    <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-0.5">
-                      <Users className="h-2.5 w-2.5" />
+                    <div className="absolute bottom-3 -right-0 bg-primary text-primary-foreground rounded-full p-0.5">
+                      <Users className="h-4 w-4" />
                     </div>
                   )}
                 </div>
-              </div>
-
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium">{dataFolder.name}</h3>
