@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader, Search, UserPlus, X } from "lucide-react";
 import { useState, useEffect, useTransition } from "react";
-import { findUserByEmail, getSharedUsersForFolder, removeFolderAccess, shareFolderWithUser } from "../actions/folderActions";
+import { findUserByEmail, getSharedUsersForFolder, inviteUserToFolder, removeFolderAccess} from "../actions/folderActions";
 import { Badge } from "@/components/ui/badge";
 
 interface FolderShareDialogProps {
@@ -64,7 +64,7 @@ export function FolderShareDialog({ folderId, folderName, ownerInfo }: FolderSha
     if (!foundUser) return;
     startInviteTransition(async () => {
       try {
-        await shareFolderWithUser(folderId, foundUser.id);
+        await inviteUserToFolder(folderId, foundUser.id);
         //toast({ title: "Sucesso!", description: `${foundUser.name} foi convidado para a pasta.` });
         setFoundUser(null); 
         setEmailToSearch(""); 
