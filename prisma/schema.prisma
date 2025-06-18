@@ -98,13 +98,11 @@ model FolderAccess {
   userId   String
   status   String @default("PENDING")
 
-  // Relações com os outros modelos
   folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
-  // Garante que um usuário só pode ter acesso a uma pasta uma única vez
   @@unique([folderId, userId])
   @@schema("app")
 }
