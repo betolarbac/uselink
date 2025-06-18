@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "./mode-toggle";
 import UserPerfil from "./userPerfil";
+import { InvitationDropdown } from "./InvitationDropdown";
 
 export function Header() {
   return (
@@ -19,6 +20,7 @@ export function Header() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <InvitationDropdown />
             <ModeToggle />
             <UserPerfil />
           </div>
