@@ -41,7 +41,7 @@ import { useFolders } from "@/hooks/useFolders";
 import { useCategories } from "@/hooks/useCategories";
 import { Switch } from "@/components/ui/switch";
 
-export function CreateLink() {
+export function CreateLink({idFolder}: {idFolder?: string}) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userInterruptedAIRef = useRef(false);
@@ -57,7 +57,7 @@ export function CreateLink() {
       url: "",
       description: "",
       customSlug: "",
-      folderId: undefined,
+      folderId: idFolder,
       categoryId: undefined,
       isPublic: false,
     },

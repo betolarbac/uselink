@@ -59,7 +59,7 @@ export default async function FolderIdPage(props: { params: tParams }) {
           </div>
         </div>
 
-        <div className="max-w-28">{isOwner && <CreateLink />}</div>
+        <div className="max-w-28">{isOwner && <CreateLink idFolder={id} />}</div>
       </div>
 
       {links && links.length > 0 ? (
