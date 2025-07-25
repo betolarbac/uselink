@@ -125,7 +125,6 @@ export default function LoginPage() {
                   className="w-full dark:text-white"
                   disabled={isLoading}
                 >
-                  Entrar
                   {isLoading ? (
                     <>
                       <Loader className="mr-2 h-4 w-4 animate-spin" /> Entrando...
