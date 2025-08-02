@@ -1,6 +1,5 @@
 import { CreateLink } from "./_components/createLink";
 import LinksData from "./_components/links/linksData";
-import { Link2 } from "lucide-react";
 import { getLinks } from "./actions/linksActions";
 import { parseAsInteger, createLoader } from "nuqs/server";
 import type { SearchParams } from "nuqs/server";
@@ -32,10 +31,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         </div>
       </div>
       <div className="space-y-4">
-        <div className="flex items-center gap-2 cursor-pointer">
-          <Link2 className="h-4 w-4" />
-          Links
-        </div>
         <div className="space-y-4">
           <LinksData
             initialLinks={paginatedLinkData.links}
