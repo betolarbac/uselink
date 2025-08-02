@@ -58,7 +58,6 @@ export function LinkTable({
   canManage = true,
 }: LinkTableProps) {
   const [links, setLinks] = useState<Link[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -73,7 +72,6 @@ export function LinkTable({
 
   useEffect(() => {
     setLinks(dataLinks);
-    setLoading(false);
   }, [dataLinks]);
 
   const filteredLinks = links.filter(
@@ -176,17 +174,7 @@ export function LinkTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={contexto === "discovery" ? 5 : 5}
-                  className="h-24 text-center"
-                >
-                  {" "}
-                  Carregando links...
-                </TableCell>
-              </TableRow>
-            ) : paginatedLinks.length === 0 ? (
+            { paginatedLinks.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={contexto === "discovery" ? 5 : 5}
