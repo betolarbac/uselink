@@ -53,7 +53,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
   return (
     <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
       <div className="group bg-card border border-border rounded-lg hover:shadow-md transition-all hover:border-primary/20 cursor-pointer w-fit">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between max-w-60">
           <Link
             href={`/dashboard/folders/${dataFolder.id}`}
             className=" p-4"
@@ -70,7 +70,7 @@ export default function FolderCard(dataFolder: FolderCardProps) {
                 </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium">{dataFolder.name}</h3>
+                  <h3 className="font-medium line-clamp-1">{dataFolder.name}</h3>
                   {dataFolder.isSecret && (
                     <span className="text-xs px-1.5 py-0.5 rounded-full bg-folder-secret/10 text-folder-secret border bg-amber-500/10 text-amber-500">
                       Secreta
